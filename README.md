@@ -11,7 +11,7 @@ Tools for geologic data access and visualization
 Currently, this functionality is available as ArcGIS Pro tools. In the future, more fuctionality will be added. 
 
 ## License information
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU GENERAL PUBLIC LICENSE version 3. For further information please refer to the [LICENSE](LICENSE)-file
+This program is free software; you can redistribute it and/or modify it under the terms of the Apache License version 2.0. For further information please refer to 'LICENSE'-file.
 
 ## Contributing
 Please find information for contributing to the project in the separate [CONTRIBUTE.md](CONTRIBUTE.md).
