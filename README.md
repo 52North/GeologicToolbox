@@ -23,6 +23,10 @@ That's all!
 ## Contributing
 Please find information for contributing to the project in the separate [CONTRIBUTE.md](CONTRIBUTE.md).
 
+## Project Information
+We just presented the project at GeoBremen 2017; find our abstract here: https://www.hochschule-bochum.de/fileadmin/media/fb_v/prof_schmidt/Geologic_Toolbox_Abstract_GeoBremen.pdf
+In the near future we will provide more information about this project. 
+
 ## Support and Contact
 If you encounter any issues with the software or if you would like to see certain functionality added, let us know at:
 - Johannes Ruban (johannes.ruban@hs-bochum.de)
