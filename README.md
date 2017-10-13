@@ -1,8 +1,13 @@
 # GeologicToolbox
 Tools for geologic data access and visualization
 
+## Project Idea
+The objective of the Geologic toolbox project is to provide software tools which bring geologic data into the GIS world. 
+As a first step, a collection of functions to import geologic layer models and borehole information into ESRI's ArcGIS Pro environment
+is provided. 
+
 ## Functionality
-- Import of GoCAD TSurf data (optionally including color codes)
+- Import of GOCAD TSurf data (optionally including color codes)
 - Import of DUDE TIN files (RAG-specific format)
 - Import of borehole data in BIF2 format (RAG-specific format)
 - Cross-section generation 
