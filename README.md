@@ -38,7 +38,9 @@ Here the "quick start" instructions are given:
 1. Install Git, e.g. Git for Windows (https://gitforwindows.org/) and TortoiseGit (see https://tortoisegit.org/).
 2. Check out the 52n Triturus source code, e.g. by starting TortoiseGit and giving the repository name: https://github.com/52North/triturus
 3. Check out the toolbox's source-code, repository name: https://github.com/bogeo/GeologicToolbox.git
-4. Compile and/or modify the Java soource code in your IDE, e.g. by using the Eclipse IDE (download via http://www.eclipse.org).
+4. Be sure to have a proper JDK installed, e.g. JDK 8 (download via http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+5. Set up your Java project using your favorite IDE, e.g. the Eclipse IDE (download via http://www.eclipse.org). Use the folder triturus\src for your Java source files and do not forget to include the Triturus project.    
+6. Compile and/or modify the Java source code in your IDE!
 
 ## Contributing
 Please find information for contributing to the project in the separate [CONTRIBUTE.md](CONTRIBUTE.md).
@@ -49,6 +51,6 @@ In the near future we will provide more information about this project.
 
 ## Support and Contact
 If you encounter any issues with the software or if you would like to see certain functionality added, let us know at:
-- Johannes Ruban, Bochum University of Applied Sciences, Department of Geodesy (johannes.ruban@hs-bochum.de)
 - Benno Schmidt, Bochum University of Applied Sciences, Geovisualization Lab (benno.schmidt@hs-bochum.de)
-- Holger Lipke, ESRI Deutschland GmmbH (h.lipke@esri.de)
+- Johannes Ruban, Bochum University of Applied Sciences, Department of Geodesy (johannes.ruban@hs-bochum.de)
+- Holger Lipke, ESRI Deutschland GmbH (h.lipke@esri.de)
