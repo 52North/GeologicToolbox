@@ -35,7 +35,7 @@ That's all!
 
 ### Java helpers (for Java Developers)
 Here the "quick start" instructions are given:
-1. Install Git, e.g. TortoiseGit (see https://tortoisegit.org/).
+1. Install Git, e.g. Git for Windows (https://gitforwindows.org/) and TortoiseGit (see https://tortoisegit.org/).
 2. Check out the 52n Triturus source code, e.g. by starting TortoiseGit and giving the repository name: https://github.com/52North/triturus
 3. Check out the toolbox's source-code, repository name: https://github.com/bogeo/GeologicToolbox.git
 4. Compile and/or modify the Java soource code in your IDE, e.g. by using the Eclipse IDE (download via http://www.eclipse.org).
