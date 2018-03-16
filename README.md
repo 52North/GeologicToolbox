@@ -1,5 +1,5 @@
 # GeologicToolbox
-Tools for geologic data access and visualization
+Tools for geologic data access, analysis, and 3D visualization
 
 ## Project Idea
 The objective of the Geologic toolbox project is to provide software tools which bring geologic data into the GIS world. 
