@@ -4,7 +4,8 @@ Tools for geologic data access, analysis, and 3D visualization
 ## Project Idea
 The objective of the Geologic toolbox project is to provide software tools which bring geologic data into the GIS world. 
 As a first step, a collection of functions to import geologic layer models and borehole information into ESRI's ArcGIS Pro environment
-is provided. Furthermore, additional Java implementations which run independent from ArcGIS Pro can be used.  
+is provided. Furthermore, additional Java implementations which run independent from ArcGIS Pro can be used. 
+We expect that the offered toolbox functionality will grow soon in the near future.    
 
 ## Functionality
 ### GeologicToolbox for ArcGIS Pro
@@ -14,6 +15,7 @@ Currently, this functionality is available as ArcGIS Pro tools.
 - Import of borehole data in BIF2 format (RAG-specific format)
 - Cross-section generation 
 - Surface-layer intersection check utility (prototype implementation)
+- Voxel-element generation between surfaces 
 In the near future, more functionality will be added.
 
 ### Java helpers
