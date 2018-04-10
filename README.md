@@ -16,6 +16,7 @@ Currently, this functionality is available as ArcGIS Pro tools.
 - Cross-section generation 
 - Surface-layer intersection check utility (prototype implementation)
 - Voxel-element generation between surfaces 
+
 In the near future, more functionality will be added.
 
 ### Java helpers
