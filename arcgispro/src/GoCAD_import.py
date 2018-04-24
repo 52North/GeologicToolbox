@@ -100,7 +100,9 @@ for GOCAD in Input_GOCAD_List:
                 #cursor = arcpy.da.InsertCursor(Polygon_Feature_Class,['SHAPE@'])
                 cursor.insertRow([polygon])
 
-                del cursor
+                #del cursor
+
+        del cursor
 
         return Polygon_Feature_Class, MultiPatch_Feature_Class
 
