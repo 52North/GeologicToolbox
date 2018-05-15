@@ -82,6 +82,8 @@ for GOCAD in Input_GOCAD_List:
             if (line.split()[0] == "END"):
                 break
 
+        cursor = arcpy.da.InsertCursor(Polygon_Feature_Class,['SHAPE@'])
+
         for line in GoCAD_File3:
             if (line.split()[0] == "TRGL"):
                 p1 = long(line.split()[1])
@@ -94,11 +96,9 @@ for GOCAD in Input_GOCAD_List:
                 polygon = arcpy.Polygon(array2, None, True, True)
 
                 array2.removeAll()
-
-                cursor = arcpy.da.InsertCursor(Polygon_Feature_Class,['SHAPE@'])
                 cursor.insertRow([polygon])
 
-                del cursor
+        del cursor
 
         return Polygon_Feature_Class, MultiPatch_Feature_Class
 
