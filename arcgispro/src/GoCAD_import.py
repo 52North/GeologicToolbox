@@ -96,11 +96,7 @@ for GOCAD in Input_GOCAD_List:
                 polygon = arcpy.Polygon(array2, None, True, True)
 
                 array2.removeAll()
-
-                #cursor = arcpy.da.InsertCursor(Polygon_Feature_Class,['SHAPE@'])
                 cursor.insertRow([polygon])
-
-                #del cursor
 
         del cursor
 
