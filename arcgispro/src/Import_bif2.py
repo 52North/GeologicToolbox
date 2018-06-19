@@ -1,7 +1,4 @@
 import arcpy
-import os
-import sys
-from arcpy import env
 
 Input_BIF2 = arcpy.GetParameterAsText(0)
 Output_BIF2 = arcpy.GetParameterAsText(1)
@@ -9,6 +6,8 @@ Output_BIF2 = arcpy.GetParameterAsText(1)
 Input_BIF2List = Input_BIF2.split(";")
 
 Continuous_borehole = arcpy.GetParameter(2)
+
+cursor = None
 
 if Continuous_borehole == True:
     out_path, out_name = Output_BIF2.split(".gdb\\")
@@ -19,28 +18,54 @@ if Continuous_borehole == True:
     has_m = "DISABLED"
     has_z = "ENABLED"
 
-    Output_BIF2_Line = arcpy.CreateFeatureclass_management(out_path, out_name+"_Continuous_borehole", geometry_type, template, has_m,
-                                                           has_z)
+    Output_BIF2_Line = arcpy.CreateFeatureclass_management(out_path, out_name + "_Continuous_borehole", geometry_type,
+                                                           template, has_m, has_z)
 
-out_path, out_name = Output_BIF2.split(".gdb\\")
-out_path = out_path + ".gdb"
+    fields = ["BLIDM", "Name", "Laenge", "Beginn_Kernstrecke", "Ansatzpunkt_Rechtswert", "Ansatzpunkt_Hochwert",
+              "Ansatzpunkt_Hoehe", "Nadelabweichung", "erster_Bohrtag", "letzter_Bohrtag", "Art_der_Bohrung",
+              "Richtung_der_Bohrung", "Auftraggeber", "Bohrverfahren", "Gemarkung_Oertlichkeit", "Status",
+              "Neigung_am_Ansatzpunkt", "Richtung_am_Ansatzpunkt", "Bohranlage"]
 
-geometry_type = "POLYLINE"
-template = ""
-has_m = "DISABLED"
-has_z = "ENABLED"
-
-Output_BIF2_Splited_Line = arcpy.CreateFeatureclass_management(out_path, out_name,
-                                                       geometry_type, template, has_m, has_z)
-
-
-if Continuous_borehole == True:
-
-    fields= ["BLIDM", "Name", "Laenge", "Beginn_Kernstrecke", "Ansatzpunkt_Rechtswert", "Ansatzpunkt_Hochwert", "Ansatzpunkt_Hoehe",
-                "Nadelabweichung", "erster_Bohrtag", "letzter_Bohrtag", "Art_der_Bohrung", "Richtung_der_Bohrung", "Auftraggeber",
-                "Bohrverfahren", "Gemarkung_Oertlichkeit", "Status", "Neigung_am_Ansatzpunkt", "Richtung_am_Ansatzpunkt", "Bohranlage"]
     for row in fields:
-        arcpy.AddField_management(Output_BIF2_Line,row ,"TEXT")
+        arcpy.AddField_management(Output_BIF2_Line, row, "TEXT")
+
+    cursor = arcpy.da.InsertCursor(Output_BIF2_Line,
+                                   ['SHAPE@', 'BLIDM', 'Name', 'Laenge', 'Beginn_Kernstrecke', 'Ansatzpunkt_Rechtswert',
+                                    'Ansatzpunkt_Hochwert', 'Ansatzpunkt_Hoehe', 'Nadelabweichung', 'erster_Bohrtag',
+                                    'letzter_Bohrtag', 'Art_der_Bohrung', 'Richtung_der_Bohrung', 'Auftraggeber',
+                                    'Bohrverfahren', 'Gemarkung_Oertlichkeit', 'Status', 'Neigung_am_Ansatzpunkt',
+                                    'Richtung_am_Ansatzpunkt', 'Bohranlage'])
+
+else:
+    out_path, out_name = Output_BIF2.split(".gdb\\")
+    out_path = out_path + ".gdb"
+
+    geometry_type = "POLYLINE"
+    template = ""
+    has_m = "DISABLED"
+    has_z = "ENABLED"
+
+    Output_BIF2_Splited_Line = arcpy.CreateFeatureclass_management(out_path, out_name, geometry_type, template, has_m,
+                                                                   has_z)
+
+    fields = ["BLIDM", "Name", "Laenge", "Beginn_Kernstrecke", "Ansatzpunkt_Rechtswert", "Ansatzpunkt_Hochwert",
+              "Ansatzpunkt_Hoehe", "Nadelabweichung", "erster_Bohrtag", "letzter_Bohrtag", "Art_der_Bohrung",
+              "Richtung_der_Bohrung", "Auftraggeber", "Bohrverfahren", "Gemarkung_Oertlichkeit", "Status",
+              "Neigung_am_Ansatzpunkt", "Richtung_am_Ansatzpunkt", "Bohranlage", "Schicht_Schicht_ID",
+              "Schicht_Bohrmeter", "Schicht_Maechtigkeit", "Schicht_Winkel_am_Kern", "Schicht_Gestein_Code",
+              "Schicht_Punkt_Rechtswert", "Schicht_Punkt_Hochwert", "Schicht_Punkt_Hoehe"]
+
+    for row in fields:
+        arcpy.AddField_management(Output_BIF2_Splited_Line, row, "TEXT")
+
+    cursor = arcpy.da.InsertCursor(Output_BIF2_Splited_Line,
+                                   ['SHAPE@', 'BLIDM', 'Name', 'Laenge', 'Beginn_Kernstrecke', 'Ansatzpunkt_Rechtswert',
+                                    'Ansatzpunkt_Hochwert', 'Ansatzpunkt_Hoehe', 'Nadelabweichung', 'erster_Bohrtag',
+                                    'letzter_Bohrtag', 'Art_der_Bohrung', 'Richtung_der_Bohrung', 'Auftraggeber',
+                                    'Bohrverfahren', 'Gemarkung_Oertlichkeit', 'Status', 'Neigung_am_Ansatzpunkt',
+                                    'Richtung_am_Ansatzpunkt', 'Bohranlage', 'Schicht_Schicht_ID', 'Schicht_Bohrmeter',
+                                    'Schicht_Maechtigkeit', 'Schicht_Winkel_am_Kern', 'Schicht_Gestein_Code',
+                                    'Schicht_Punkt_Rechtswert', 'Schicht_Punkt_Hochwert', 'Schicht_Punkt_Hoehe'])
 
 ##################################################################################################################
 array = arcpy.Array()
@@ -48,11 +73,11 @@ array2 = arcpy.Array()
 
 for BIF2 in Input_BIF2List:
     array2.removeAll()
-    BIF2 = BIF2.replace("'","")
+    BIF2 = BIF2.replace("'", "")
 
     ###############################################################################################################
 
-    BIF2 = open(BIF2, "r", encoding = "utf-16")
+    BIF2 = open(BIF2, "r", encoding="utf-16")
     X = 0
     Y = 0
     Z = 0
@@ -68,8 +93,7 @@ for BIF2 in Input_BIF2List:
                 Y = float(line.rsplit()[1])
             if line.rsplit()[0] == "Bl.Verlauf.Punkt.Hoehe:":
                 Z = float(line.rsplit()[1])
-                array.add(arcpy.Point(X,Y,Z))
-
+                array.add(arcpy.Point(X, Y, Z))
 
         if line.rsplit()[0] == "Bl.BLIDM:":
             BLIDM = line.split(' ', 1)[1]
@@ -149,9 +173,7 @@ for BIF2 in Input_BIF2List:
         if line.rsplit()[0] == "Bl.Schicht.Winkel_am_Kern:":
             Schicht_Winkel_am_Kern = line.split(' ', 1)[1]
 
-
         if line.rsplit()[0] == "Bl.Schicht.Gestein.Code:":
-
             Schicht_Gestein_Code = [line.split(' ', 1)[1]]
             Schicht_Gestein_Code = Schicht_Gestein_Code[0]
 
@@ -172,86 +194,50 @@ for BIF2 in Input_BIF2List:
             if len(Auftraggeber_List) == 1:
                 Auftraggeber = ''.join(Auftraggeber_List)
             else:
-                Auftraggeber = str(Auftraggeber_List).replace("\\n'", "").replace("['", "").replace("'", "").replace("]", "")
+                Auftraggeber = str(Auftraggeber_List).replace("\\n'", "").replace("['", "").replace("'", "").replace(
+                    "]", "")
 
             if len(Bohranlage_List) == 1:
                 Bohranlage = ''.join(Bohranlage_List)
             else:
-                Bohranlage = str(Bohranlage_List).replace("\\n'", "").replace("['", "").replace("'", "").replace("]", "")
+                Bohranlage = str(Bohranlage_List).replace("\\n'", "").replace("['", "").replace("'", "").replace("]",
+                                                                                                                 "")
 
             if len(Schicht_Gestein_Code_List) == 1:
                 Schicht_Gestein_Code = ''.join(Schicht_Gestein_Code_List)
             else:
-                Schicht_Gestein_Code = str(Schicht_Gestein_Code_List).replace("\\n'", "").replace("['", "").replace("'", "").replace("]", "")
-
-
-
+                Schicht_Gestein_Code = str(Schicht_Gestein_Code_List).replace("\\n'", "").replace("['", "").replace("'",
+                                                                                                                    "").replace(
+                    "]", "")
 
             point = arcpy.Point(Schicht_Punkt_Rechtswert, Schicht_Punkt_Hochwert, Schicht_Punkt_Hoehe)
             array2.add(point)
 
             array3 = arcpy.Array()
-            array3.add(array2.getObject(Schicht_Schicht_ID-1))
+            array3.add(array2.getObject(Schicht_Schicht_ID - 1))
             array3.add(array2.getObject(Schicht_Schicht_ID))
 
-            polyline2 = arcpy.Polyline(array3,None,True,False)
+            polyline2 = arcpy.Polyline(array3, None, True, False)
 
             array3.removeAll()
 
-            fields = ["BLIDM", "Name", "Laenge", "Beginn_Kernstrecke", "Ansatzpunkt_Rechtswert",
-                          "Ansatzpunkt_Hochwert", "Ansatzpunkt_Hoehe",
-                          "Nadelabweichung", "erster_Bohrtag", "letzter_Bohrtag", "Art_der_Bohrung",
-                          "Richtung_der_Bohrung", "Auftraggeber",
-                          "Bohrverfahren", "Gemarkung_Oertlichkeit", "Status", "Neigung_am_Ansatzpunkt",
-                          "Richtung_am_Ansatzpunkt", "Bohranlage","Schicht_Schicht_ID", "Schicht_Bohrmeter",
-                          "Schicht_Maechtigkeit", "Schicht_Winkel_am_Kern", "Schicht_Gestein_Code",
-                          "Schicht_Punkt_Rechtswert", "Schicht_Punkt_Hochwert", "Schicht_Punkt_Hoehe"]
-
-            for row in fields:
-                arcpy.AddField_management(Output_BIF2_Splited_Line, row, "TEXT")
-
-            cursor = arcpy.da.InsertCursor(Output_BIF2_Splited_Line,
-                                               ['SHAPE@', 'BLIDM', 'Name', 'Laenge', 'Beginn_Kernstrecke',
-                                                'Ansatzpunkt_Rechtswert',
-                                                'Ansatzpunkt_Hochwert', 'Ansatzpunkt_Hoehe', 'Nadelabweichung',
-                                                'erster_Bohrtag',
-                                                'letzter_Bohrtag', 'Art_der_Bohrung', 'Richtung_der_Bohrung',
-                                                'Auftraggeber',
-                                                'Bohrverfahren', 'Gemarkung_Oertlichkeit', 'Status',
-                                                'Neigung_am_Ansatzpunkt',
-                                                'Richtung_am_Ansatzpunkt', 'Bohranlage','Schicht_Schicht_ID',
-                                                'Schicht_Bohrmeter', 'Schicht_Maechtigkeit', 'Schicht_Winkel_am_Kern',
-                                                'Schicht_Gestein_Code', 'Schicht_Punkt_Rechtswert', 'Schicht_Punkt_Hochwert',
-                                                'Schicht_Punkt_Hoehe'])
-
-            cursor.insertRow([polyline2, BLIDM, Name, Laenge, Beginn_Kernstrecke, Ansatzpunkt_Rechtswert,
-                                  Ansatzpunkt_Hochwert, Ansatzpunkt_Hoehe, Nadelabweichung, erster_Bohrtag,
-                                  letzter_Bohrtag, Art_der_Bohrung, Richtung_der_Bohrung, Auftraggeber,
-                                  Bohrverfahren, Gemarkung_Oertlichkeit, Status, Neigung_am_Ansatzpunkt,
-                                  Richtung_am_Ansatzpunkt, Bohranlage, Schicht_Schicht_ID, Schicht_Bohrmeter,
-                                  Schicht_Maechtigkeit, Schicht_Winkel_am_Kern, Schicht_Gestein_Code,
-                                  Schicht_Punkt_Rechtswert, Schicht_Punkt_Hochwert, Schicht_Punkt_Hoehe])
-            del cursor
+            cursor.insertRow(
+                [polyline2, BLIDM, Name, Laenge, Beginn_Kernstrecke, Ansatzpunkt_Rechtswert, Ansatzpunkt_Hochwert,
+                 Ansatzpunkt_Hoehe, Nadelabweichung, erster_Bohrtag, letzter_Bohrtag, Art_der_Bohrung,
+                 Richtung_der_Bohrung, Auftraggeber, Bohrverfahren, Gemarkung_Oertlichkeit, Status,
+                 Neigung_am_Ansatzpunkt, Richtung_am_Ansatzpunkt, Bohranlage, Schicht_Schicht_ID, Schicht_Bohrmeter,
+                 Schicht_Maechtigkeit, Schicht_Winkel_am_Kern, Schicht_Gestein_Code, Schicht_Punkt_Rechtswert,
+                 Schicht_Punkt_Hochwert, Schicht_Punkt_Hoehe])
 
             Schicht_Gestein_Code_List.clear()
 
-
-
     if Continuous_borehole == True:
-        polyline = arcpy.Polyline(array,None,True,False)
-        cursor = arcpy.da.InsertCursor(Output_BIF2_Line,
-                        ['SHAPE@', 'BLIDM', 'Name', 'Laenge', 'Beginn_Kernstrecke', 'Ansatzpunkt_Rechtswert',
-                        'Ansatzpunkt_Hochwert', 'Ansatzpunkt_Hoehe', 'Nadelabweichung', 'erster_Bohrtag',
-                        'letzter_Bohrtag', 'Art_der_Bohrung', 'Richtung_der_Bohrung', 'Auftraggeber',
-                        'Bohrverfahren', 'Gemarkung_Oertlichkeit', 'Status', 'Neigung_am_Ansatzpunkt',
-                        'Richtung_am_Ansatzpunkt', 'Bohranlage'])
+        polyline = arcpy.Polyline(array, None, True, False)
 
-        cursor.insertRow([polyline, BLIDM, Name, Laenge, Beginn_Kernstrecke, Ansatzpunkt_Rechtswert,
-                        Ansatzpunkt_Hochwert, Ansatzpunkt_Hoehe, Nadelabweichung, erster_Bohrtag,
-                        letzter_Bohrtag, Art_der_Bohrung, Richtung_der_Bohrung, Auftraggeber,
-                        Bohrverfahren, Gemarkung_Oertlichkeit, Status, Neigung_am_Ansatzpunkt,
-                        Richtung_am_Ansatzpunkt, Bohranlage])
-        del cursor
+        cursor.insertRow(
+            [polyline, BLIDM, Name, Laenge, Beginn_Kernstrecke, Ansatzpunkt_Rechtswert, Ansatzpunkt_Hochwert,
+             Ansatzpunkt_Hoehe, Nadelabweichung, erster_Bohrtag, letzter_Bohrtag, Art_der_Bohrung, Richtung_der_Bohrung,
+             Auftraggeber, Bohrverfahren, Gemarkung_Oertlichkeit, Status, Neigung_am_Ansatzpunkt,
+             Richtung_am_Ansatzpunkt, Bohranlage])
 
-
-
+del cursor
