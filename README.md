@@ -49,7 +49,7 @@ Here the "quick start" instructions are given:
 Please find information for contributing to the project in the separate [CONTRIBUTE.md](CONTRIBUTE.md).
 
 ## Project Information
-We just presented the project at GeoBremen 2017; find our abstract here: https://www.hochschule-bochum.de/fileadmin/media/fb_v/prof_schmidt/Geologic_Toolbox_Abstract_GeoBremen.pdf
+We just presented the project at GeoBremen 2017; find our abstract [here](https://www.hs-bochum.de/fileadmin/public/Die-BO_Fachbereiche/fb_g/veroeffentlichungen/Schmidt/GeologicToolbox-Abstract-GeoBremen.pdf).
 In the near future we will provide more information about this project. 
 
 ## Support and Contact
