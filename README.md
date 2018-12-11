@@ -1,5 +1,5 @@
 ![](https://52north.org/wp-content/uploads/2016/06/logo-main.png) 
-# GeologicToolbox
+# 52n GeologicToolbox
 Tools for geologic data access, analysis, and 3D visualization
 
 ## Project Idea
