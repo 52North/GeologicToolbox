@@ -3,7 +3,7 @@
 Tools for geologic data access, analysis, and 3D visualization
 
 ## Project Idea
-The objective of the Geologic Toolbox project is to provide software tools which bring geologic data into the GIS world. As a first step, a collection of functions to import geologic layer models and borehole information into ESRI's ArcGIS Pro environment is provided. Furthermore, additional Java implementations which run independently from ArcGIS Pro can be used. We expect that the offered toolbox functionality will grow soon in the near future.    
+The objective of the Geologic Toolbox project is to provide software tools which bring geologic data into the GIS world. As a first step, a collection of functions to import geologic layer models and borehole information into ESRI's ArcGIS Pro environment is provided. Furthermore, additional Java implementations which run independently from ArcGIS Pro can be used. We expect that the offered toolbox functionality will grow soon in the near future. A draft version of a White Paper describing the idea behind the project can be found [here](https://www.hs-bochum.de/fileadmin/public/Die-BO_Fachbereiche/fb_g/veroeffentlichungen/Schmidt/52N_GeologicToolbox_White_Paper_draft3.pdf). 
 
 ## Functionality
 ### 52n GeologicToolbox for ArcGIS Pro
@@ -47,10 +47,12 @@ Here the "quick start" instructions are given:
 Please find information for contributing to the project in the separate [CONTRIBUTE.md](CONTRIBUTE.md).
 
 ## Project Information
+A draft version of the GeologicToolbox White Paper can be found [here](https://www.hs-bochum.de/fileadmin/public/Die-BO_Fachbereiche/fb_g/veroeffentlichungen/Schmidt/52N_GeologicToolbox_White_Paper_draft3.pdf). 
 We first presented the project at GeoBremen 2017; find our abstract [here](https://www.hs-bochum.de/fileadmin/public/Die-BO_Fachbereiche/fb_g/veroeffentlichungen/Schmidt/GeologicToolbox-Abstract-GeoBremen.pdf). In the near future we will provide more information about this project, e.g. in the German [user group "3D Geology and GIS"](https://www.esri.de/gis-community/anwendergruppen). 
 
 ## Support and Contact
 If you encounter any issues with the software or if you would like to see certain functionality added, let us know at:
 - Benno Schmidt, Bochum University of Applied Sciences, Geovisualization Lab (benno.schmidt@hs-bochum.de)
-- Johannes Ruban, Bochum University of Applied Sciences, Department of Geodesy (johannes.ruban@hs-bochum.de)
 - Holger Lipke, ESRI Deutschland GmbH (h.lipke@esri.de)
+- Johannes Ruban, Bochum University of Applied Sciences, Department of Geodesy (johannes.ruban@hs-bochum.de)
+- Till Riemenschneider, Bochum University of Applied Sciences, Department of Geodesy (till.riemenschneider@hs-bochum.de)
