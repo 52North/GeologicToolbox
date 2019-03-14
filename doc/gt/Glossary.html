@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <title>52n GeologicToolbox Documentation</title>
+	<link rel="stylesheet" type="text/css" href="../style.css" />
+  </head>
+  <body>
+    <h1>Glossary of Terms</h1>
+	<p>
+	  <a id="#ArcPy" />
+	  <b>ArcPy</b>: ArcPy is a <a href="#Python">Python</a> side package that provides the user with the ability to write 
+	  scripts, which use the geoprocessing functions within ArcGIS Pro. 
+	  <a href="http://pro.arcgis.com/en/pro-app/arcpy/get-started/what-is-arcpy-.htm">
+	    More info about what ArcPy is.
+      </a>
+	</p>
+	<p>
+	  <b>Borehole</b>: Usually a polyline, consisting of multiple ArcGIS Points.
+	</p>
+	<p>
+	  <b>Feature</b> (ArcGIS): A geological feature such as a Point, Polyline, Polygon or Multipatch. Stored in 
+	  <a href="#FeatureClass">Feature Classes</a>.
+	</p>
+	<p>
+	  <a id="#FeatureClass" />
+	  <b>Feature Class</b>: An ArcGIS class that contains features from one and only one geometry (Point, Multipoint, 
+	  Polyline, Polygon, Multipolygon, Multipatch).
+	  <a href="http://desktop.arcgis.com/en/arcmap/10.3/manage-data/geodatabases/feature-class-basics.htm">
+	    More info on Feature Class basics.
+	  </a>
+	</p>
+	<p>
+	  <b>Feature Dataset</b>: A set of thematically related feature classes.
+	  <a href="https://pro.arcgis.com/en/pro-app/tool-reference/data-management/create-feature-dataset.htm">
+	    More info on how to create Datasets.
+	  </a>
+	</p>
+	<p>
+	  <b>GOCAD</b>: A modelling software for seismic, geological and reservoir data.
+	  <a href="http://www.pdgm.com/products/gocad/">
+	    More info on the GOCAD software.
+	  </a>
+	</p>
+	<p>
+	  <b>Point</b> (ArcGIS): Two dimensional vertex described by data for the x- and y-axis resp. three-dimensional vertex 
+	  described by data for the x-, y-, and z-axis.
+	  <a href="http://pro.arcgis.com/en/pro-app/arcpy/classes/point.htm">
+	    More info on the ArcPy Point.
+	  </a>
+	</p>
+	<p>
+	  <b>Polygon</b> (ArcGIS): A geometric shape consisting of at least three ArcGIS Points (vertices). With 
+	  <a href="#ArcPy">ArcPy</a>, only triangles can be built consistently.
+	  <a href="http://pro.arcgis.com/en/pro-app/arcpy/classes/polygon.htm">
+	    More info on the ArcPy Polygon.
+	  </a>
+	</p>
+	<p>
+	  <a id="#Python" />
+	  <b>Python</b> (in ArcGIS Pro): Python is the programming language of choice for ArcGIS since 9.0. It has been accepted 
+	  as the scripting language for geoprocessing users. Scripts for ArcGIS Pro are written in Python 3.
+	  <a href="http://pro.arcgis.com/en/pro-app/arcpy/get-started/installing-python-for-arcgis-pro.htm">
+	    More info on Python in ArcGIS Pro.
+	  </a>
+	</p>
+	<p>
+	  <b>Script</b> (ArcGIS): Besides the ability to write <a href="#Python">Python</a> code in the &quot;Python&quot; window 
+	  of ArcGIS Pro, you can also create <a href="#ArcPy">ArcPy</a> scripts, which can be used to sequence geoprocessing tools 
+	  into a reusable tool.
+	  <a href="http://desktop.arcgis.com/en/arcmap/10.3/analyze/creating-tools/a-quick-tour-of-creating-script-tools.htm">
+	    More info on how to create scripts.
+	  </a>
+	</p>
+	<p>
+	  <b>Stratigraphic surface</b>: A surface representing the upper or lower horizon of a <a href="#Stratum">stratum</a>
+	  (e.g., a layer of soil). Usually made up of ArcGIS Polygons.
+	</p>
+	<p>
+	  <a id="#Stratum" />
+	  <b>Stratum</b>: Represents a volume body of soil. Described by an upper and lower horizon and the type of soil.
+	</p>
+	<p>
+	  <b>Surface</b>: Usually consists of connected triangles. Can also be a Multipatch.
+	</p>
+	<p>
+	  <b>TIN</b>: Triangular Irregular Network.
+	  <a href="http://desktop.arcgis.com/en/arcmap/10.3/manage-data/tin/fundamentals-of-tin-surfaces.htm">
+	    More info on TIN surfaces.
+	  </a>
+	</p>
+	<p>
+	  <b>Voxel</b>: A voxel represents a value on a regular three-dimensional grid. Best described as an "3D pixel".
+	  <a href="https://en.wikipedia.org/wiki/Voxel">
+	    Wikipedia definition (voxel)
+      </a>
+	</p>
+	<p>
+	  <b>VTK</b>: A format from the &quot;Visualisation Toolkit&quot; (VTK) software. Aims to be used as an universal format 
+	  for data interoperability here.
+	  <a href="https://vtk.org">
+	    More info on the VTK format.
+	  </a>
+	</p>
+	<p>
+	  <b>Soil type</b>: Attribute with an ID, a name and preferably a color (e.g., clay, sand, silt, etc.).
+	</p>
+	<p class="author">Author of this page: Till Riemenschneider</p>
+	<p><a href="..\index.html">Back to main page</a></p>
+  </body>
+</html>

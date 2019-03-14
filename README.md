@@ -10,12 +10,14 @@ The objective of the Geologic Toolbox project is to provide software tools which
 Currently, this functionality is available as ArcGIS Pro tools.  
 - Import of GOCAD TSurf data (optionally including color codes)
 - Import of DUDE TIN files (RAG-specific format)
+- Import of models in vtk format
 - Import of borehole data in BIF2 format (RAG-specific format)
 - Cross-section generation 
+- Extraction of topplogical model boundaries
 - Surface-layer intersection check utility (prototype implementation)
-- Voxel-element generation between surfaces (prototype implementation)
+- Voxel-element generation between surfaces (prototype implementations)
 
-In the near future, more functionality will be added.
+It is planned to add more functionality in the near future.
 
 ### Java helpers
 Based on the 52n Triturus framework (see https://github.com/52North/triturus) addionally some Java helpers are provided. Currently, this functionality has been realized: 
