@@ -6,8 +6,33 @@
   <body>
     <h1>Voxel Model Generation</h1>
     <p>
-      TODO
+      The ArcPy Script &quot;Generate Voxel&quot; allows for the creation of Voxel from ArcGIS Polygon layers.
+	  It accepts an unlimited amount of layers and creates a user-defined amount of Voxel between the top and bottom 
+	  layers of a Stratum.
     </p>
+	<img src="../images/Voxel_generator_naming.png" width="700" height="300" />
+	<p>
+		This image shows the naming conventions for the layers. The top-layer of a stratum has to be infront of the bottom-layer, alphabetically. </br>
+		For example, these input layers would create three sets of Voxel. One between the layers: <b>Layer_1a & Layer_1b</b>.
+		One between the layers: <b>Layer_1b & Layer_2a</b>. And one between the layers: <b>Layer_2a & Layer_2b</b>.
+	</p>
+	<img src="../images/Voxel_generator_noSymbology.JPG" width="700" height="300" />
+	<p>
+		This image shows an example of generated Voxel, displayed as points. 15625 (25 per axis) Voxel per Stratum have been created.
+		</br>These Voxel don't have the proper symbology yet. To fix this, follow the instructions in the log-file of the tool.
+	</p>
+	<img src="../images/Voxel_generator_10x10x10.JPG" width="700" height="300" />
+	<p>
+		This image shows the Voxel with proper symbology. 1000 (10 per axis) Voxel per Stratum have been created.
+	</p>
+	<img src="../images/Voxel_generator_50x50x50.JPG" width="700" height="300" />
+	<p>
+		This image also shows Voxel with proper symbology. 125,000 (50 per axis) Voxel per Stratum have been created.
+	</p>
+	<br/>
+	<p>
+		Note: The run-time of this tool is greatly dependent on the number of Voxel to be created. 
+	</p>
     <p class="author">Author of this page: Till Riemenschneider</p>
     <p><a href="..\index.html">Back to main page</a></p>
   </body>
