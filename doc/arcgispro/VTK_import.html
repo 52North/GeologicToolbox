@@ -6,8 +6,23 @@
   <body>
     <h1>Import of VTK models</h1>
     <p>
-      TODO
+      The ArcPy scripts &quot;Import VTK&quot; and &quot;Import VTK Border&quot; can be used to import triangle meshes encoded in the 
+	  VTK-ASCII file format into ArcGIS Pro.
+	  <br/>
+	  &quot;Import VTK&quot; generates ArcGIS Polygons and &quot;Import VTK Border&quot; generates ArcGIS Polylines.
     </p>
+	<img src="../images/VTK_import.JPG" width="700" height="350" />
+	<p>
+		This image shows the result of five imported VTK-files (imported with the tool &quot;Import VTK&quot;).
+		Each File is saved into a separate Polygon-Feature class and represents a stratigraphic surface.
+		<br/> These layers can be used to generate Voxel.
+	</p>
+	<img src="../images/VTK_import_border.JPG" width="700" height="350" />
+	<p>
+		This image shows the borders of five imported VTK-files (imported with the tool &quot;Import VTK Border&quot;).
+		Each File is saved into a separate Polyline-Feature class and represents the border of a stratigraphic surface.
+		<br/> These layers can <b>NOT</b> be used to generate Voxel and should only be used to get a first impression of the data.
+	</p>
     <p class="author">Author of this page: Till Riemenschneider</p>
     <p><a href="..\index.html">Back to main page</a></p>
   </body>
