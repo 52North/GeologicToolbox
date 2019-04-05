@@ -40,9 +40,10 @@ To install the very latest toolbox version for ArcGIS Pro, follow these steps:
 1. Copy the required files to your local disk: /arcgispro/bin/GeologicToolbox.tbx and all Python source files from 
 /arcgispro/src. Note: Alternatively, just check out this repository https://github.com/52North/GeologicToolbox.git with 
 a suitable Git client (e.g., TortoiseGit).
-2. Start up ArcGIS Pro and call the 'Add Toolbox' command. Then select the file GeologicToolbox.tbx. 
-The GeologicToolbox.tbx is now available in the catalog, under "Project", "Toolboxes". It contains the different tools as scripts.
-3. The scripts still have to be imported individually. To do this, open the properties in the context menu of a script. Here you have to check the box "Import script".
+2. Start up ArcGIS Pro and call the 'Add Toolbox' command. Then select the file GeologicToolbox.tbx. The GeologicToolbox.tbx 
+is now available in the catalog, under "Project", "Toolboxes". It contains the different tools as scripts.
+3. The scripts still have to be imported individually inside ArcGIS Pro. To do this, open the properties in the context menu
+of a script. Here you have to check the box "Import script".
 That's all!
 
 ### Java helpers (for Java Developers)
