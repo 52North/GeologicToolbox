@@ -15,13 +15,11 @@ public class GocadTSurfObjExportExample
 {
 
 	private final String
-		inFilename = "data/GOCAD/aussrtm_Seligenstadt.ts",
-//		inFilename = "data/GOCAD/Flugsand_Base_cut.ts",
-//		inFilename = "data/simple_test.ts",
+ 		inFilename = "data/simple_test.ts",
 		outFilename = "data/simple_test.obj"; 
 	
 	public static void main(String args[]) {
-		new GocadTSurfToObjExample().run();
+		new GocadTSurfObjExportExample().run();
 	}
 	
 	public void run() 
