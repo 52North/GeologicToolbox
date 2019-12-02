@@ -21,7 +21,7 @@ public class GocadTSurfObjExportExample
 	public static void main(String args[]) {
 		new GocadTSurfObjExportExample().run();
 	}
-	
+	 
 	public void run() 
 	{ 
 		try {
