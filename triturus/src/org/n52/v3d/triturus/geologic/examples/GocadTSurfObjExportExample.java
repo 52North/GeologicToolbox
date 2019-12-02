@@ -6,10 +6,10 @@ import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.IoTINWriter;
 
 /**
- * Geologic Toolbox example application: Reads a GOCAD TSurf TIN and writes 
- * it to an OBJ-File.
+ * Geologic Toolbox example application: Reads a GOCAD TSurf TIN and writes it 
+ * to a Wavefront OBJ file.
  * 
- * @author Jatzek
+ * @author Nico Jatzek
  */
 public class GocadTSurfObjExportExample
 {
