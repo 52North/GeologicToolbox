@@ -46,8 +46,8 @@ import org.n52.v3d.triturus.gisimplm.IoTINWriter;
 public class GocadTSurfImportExample
 {
 	private final String
-		inFilename = "data/simple_test.ts",
-		outFilename = "data/simple_test.html"; 
+		inFilename = "/projects/GeologicToolbox/data/simple_test.ts",
+		outFilename = "/projects/GeologicToolbox/data/simple_test.html"; 
 
 	public static void main(String args[]) {
 		new GocadTSurfImportExample().run();

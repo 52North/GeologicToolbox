@@ -15,8 +15,8 @@ public class GocadTSurfObjExportExample
 {
 
 	private final String
- 		inFilename = "data/simple_test.ts",
-		outFilename = "data/simple_test.obj"; 
+ 		inFilename = "/projects/GeologicToolbox/data/simple_test.ts",
+		outFilename = "/projects/GeologicToolbox/data/simple_test.obj"; 
 	
 	public static void main(String args[]) {
 		new GocadTSurfObjExportExample().run();
