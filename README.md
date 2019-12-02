@@ -17,14 +17,14 @@ Currently, this functionality is available as ArcGIS Pro tools.
 - Import of models in VTK format
 - Import of borehole data in BIF2 format (RAG-specific format)
 - Cross-section generation 
-- Extraction of topplogical model boundaries
+- Extraction of topological model boundaries
 - Surface-layer intersection check utility (prototype implementation)
 - Voxel-element generation between surfaces (prototype implementations)
 
 It is planned to add more functionality in the near future.
 
 ### Java helpers
-Based on the 52n Triturus framework (see https://github.com/52North/triturus) addionally some Java helpers are provided. 
+Based on the 52n Triturus framework (see https://github.com/52North/triturus) additionally some Java helpers are provided. 
 Currently, this functionality has been realized: 
 - Checking of GOCAD project files 
 - Access to GOCAD TSurf data
@@ -37,11 +37,13 @@ For further information please refer to 'LICENSE'-file.
 ## Software Installation 
 ### GeologicToolbox for ArcGIS Pro
 To install the very latest toolbox version for ArcGIS Pro, follow these steps:
-1. Copy the required files to your local disk: /arcgispro/bin/SurfaceTools.tbx and all Python source files from 
-/arcgispro/src. Note: Alternatively, just check out this repository https://github.com/bogeo/GeologicToolbox.git with 
+1. Copy the required files to your local disk: /arcgispro/bin/GeologicToolbox.tbx and all Python source files from 
+/arcgispro/src. Note: Alternatively, just check out this repository https://github.com/52North/GeologicToolbox.git with 
 a suitable Git client (e.g., TortoiseGit).
-2. Start up ArcGIS Pro and call the 'Add Toolbox' command. Then select the file SurfaceTools.tbx.
-3. Inside ArcGIS Pro, select all the downloaded Python files (.py) under 'Tool Properties'. 
+2. Start up ArcGIS Pro and call the 'Add Toolbox' command. Then select the file GeologicToolbox.tbx. The GeologicToolbox.tbx 
+is now available in the catalog, under "Project", "Toolboxes". It contains the different tools as scripts.
+3. The scripts still have to be imported individually inside ArcGIS Pro. To do this, open the properties in the context menu
+of a script. Here you have to check the box "Import script".
 That's all!
 
 ### Java helpers (for Java Developers)
