@@ -13,15 +13,14 @@ import org.n52.v3d.triturus.gisimplm.IoTINWriter;
  */
 public class GocadTSurfObjExportExample
 {
-
 	private final String
- 		inFilename = "C:/Hs-BO.Entwicklung/52n GeologicToolbox/HLNUG-Tools/Daten/s_geologie_Zechstein_ts",
-		outFilename = "/projects/GeologicToolbox/data/s_geologie_Zechstein_ts.obj"; 
+ 		inFilename = "/projects/GeologicToolbox/data/simple_test.ts",
+		outFilename = "/projects/GeologicToolbox/data/simple_test.obj"; 
 	
 	public static void main(String args[]) {
 		new GocadTSurfObjExportExample().run();
 	}
-	 
+	
 	public void run() 
 	{ 
 		try {
@@ -37,5 +36,4 @@ public class GocadTSurfObjExportExample
 			e.printStackTrace();
 		}
 	}
-
 }
