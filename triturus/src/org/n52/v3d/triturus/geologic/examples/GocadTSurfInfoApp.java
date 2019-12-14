@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2018 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2018 52 North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -69,9 +69,9 @@ public class GocadTSurfInfoApp
 		
 		if (surf != null) {
 			for (GmSimpleTINFeature s : surf) {
-            	System.out.println(s);
-            	System.out.println(s.getGeometry().envelope());
-            }
-        }
-    }
+				System.out.println(s);
+				System.out.println(s.getGeometry().envelope());
+			}
+		}
+	}
 }

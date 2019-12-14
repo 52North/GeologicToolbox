@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2018 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2018 52 North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -103,24 +103,24 @@ public class IoGocadTSurfReader extends IoObject
         
         try {
         	for (int pass = 1; pass <= untilPass; pass++) {
-	        	if (location.startsWith("http"))
+				if (location.startsWith("http"))
 					reader = this.createBufferedReader(new URL(location));
 				else
-	        		reader = this.createBufferedReader(location);
-
-	        	switch (pass) {
-	        	case 1:
-		        	info = this.readGocadTSurf_Pass1(reader, location); 
-	        		break;
-	        	case 2:
-	                tins = this.readGocadTSurf_Pass2(reader, location); 
-	        		break;
-	        	}
-	            reader.close();
+					reader = this.createBufferedReader(location);
+				
+				switch (pass) {
+				case 1:
+					info = this.readGocadTSurf_Pass1(reader, location); 
+					break;
+				case 2:
+					tins = this.readGocadTSurf_Pass2(reader, location); 
+					break;
+				}
+				reader.close();
         	}
         }
         catch (T3dException e) {
-            throw e;
+			throw e;
         } 
         catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -147,12 +147,12 @@ public class IoGocadTSurfReader extends IoObject
     
     private BufferedReader createBufferedReader(URL url) {
 		InputStream is = null;
-        BufferedReader reader;
+		BufferedReader reader;
 		try {
 			is = url.openStream();
 			reader = new BufferedReader(new InputStreamReader(is));
 		} catch (IOException e) {
-        	System.out.println("<IoGocadTSurfReader> Data import failed: " + url);
+			System.out.println("<IoGocadTSurfReader> Data import failed: " + url);
 			e.printStackTrace();
 			throw new T3dException("Could not open import stream " + url);
 		}
@@ -195,15 +195,15 @@ public class IoGocadTSurfReader extends IoObject
 	
 	            boolean objectBegin = false;
 	            while (line != null && !objectBegin) {
-	                tok1 = getStrTok(line, 1, " ");
-	            	if ("GOCAD".equalsIgnoreCase(tok1)) {
-	            		lInfo = new GocadDataInfo();
-	                    lInfo.setObjectType(getStrTok(line, 2, " "));
-	            		objectBegin = true;
-	            	}
-	            	
-	                line = reader.readLine(); 
-	                lineNumber++;
+					tok1 = getStrTok(line, 1, " ");
+					if ("GOCAD".equalsIgnoreCase(tok1)) {
+						lInfo = new GocadDataInfo();
+						lInfo.setObjectType(getStrTok(line, 2, " "));
+						objectBegin = true;
+					}
+					
+					line = reader.readLine(); 
+					lineNumber++;
 	            }
 	            
 	            boolean objectEnd = false;
@@ -293,19 +293,19 @@ public class IoGocadTSurfReader extends IoObject
             return info;
         }
         catch (FileNotFoundException e) {
-            throw new T3dException(
-            	"Could not access file \"" + location + "\".");
+			throw new T3dException(
+					"Could not access file \"" + location + "\".");
         }
         catch (IOException e) {
-            throw new T3dException(e.getMessage());
+			throw new T3dException(e.getMessage());
         }
         catch (T3dException e) {
-            throw new T3dException(e.getMessage());
+			throw new T3dException(e.getMessage());
         }
         catch (Exception e) {
-        	e.printStackTrace();
-            throw new T3dException(
-            	"Parser error in \"" + location + "\":" + lineNumber);
+			e.printStackTrace();
+			throw new T3dException(
+					"Parser error in \"" + location + "\":" + lineNumber);
         }
     }
 
@@ -313,13 +313,13 @@ public class IoGocadTSurfReader extends IoObject
 		readGocadTSurf_Pass2(BufferedReader reader, String location) 
 		throws T3dException
 	{
-	    int lineNumber = 0;
+		int lineNumber = 0;
 		String line;
-	    String tok1;
+		String tok1;
 	
-        tins = new ArrayList<GmSimpleTINFeature>();
-	    int i = 0;
-	    String lastObj = null;
+		tins = new ArrayList<GmSimpleTINFeature>();
+		int i = 0;
+		String lastObj = null;
 	    
 	    try { // Quick and dirty "parser" implementation:
 	        line = reader.readLine(); 
@@ -391,11 +391,11 @@ public class IoGocadTSurfReader extends IoObject
 		            GmSimpleTINGeometry tinGeom = (GmSimpleTINGeometry) tin.getGeometry();
 					if (points.size() != lInfo.getNumberOfVertices()) {
 						throw new T3dException(
-							"Assertion violation: Vertex count difference!"
-							+ " (Read "	+ points.size() + " VRTX/PVRTX elems"
-							+ " while info is " + lInfo.getNumberOfVertices() + ".)"
-							+ " line#:" + lineNumber 
-							+ " info = " + lInfo);
+								"Assertion violation: Vertex count difference!"
+								+ " (Read "	+ points.size() + " VRTX/PVRTX elems"
+								+ " while info is " + lInfo.getNumberOfVertices() + ".)"
+								+ " line#:" + lineNumber 
+								+ " info = " + lInfo);
 					}
 					tinGeom.newPointList(points.size());
 		            //tin.setBoundsInvalid(); // for performance reasons! TODO
@@ -414,26 +414,26 @@ public class IoGocadTSurfReader extends IoObject
 		            tins.add(tin);
 	            }
 
-	            i++;
-
-		   		line = reader.readLine(); 
+				i++;
+				
+				line = reader.readLine(); 
 				lineNumber++;
 	        }           
 	    }
 	    catch (FileNotFoundException e) {
-	        throw new T3dException(
-	        	"Could not access file \"" + location + "\".");
+			throw new T3dException(
+					"Could not access file \"" + location + "\".");
 	    }
 	    catch (IOException e) {
-	        throw new T3dException(e.getMessage());
+			throw new T3dException(e.getMessage());
 	    }
 	    catch (T3dException e) {
-	        throw new T3dException(e.getMessage());
+			throw new T3dException(e.getMessage());
 	    }
 	    catch (Exception e) {
-	    	e.printStackTrace();
-	        throw new T3dException(
-	        	"Parser error in \"" + location + "\":" + lineNumber);
+			e.printStackTrace();
+			throw new T3dException(
+					"Parser error in \"" + location + "\":" + lineNumber);
 	    }
 	    
         System.out.println("Imported " + tins.size() + " TSurf object(s)."); 
@@ -452,16 +452,16 @@ public class IoGocadTSurfReader extends IoObject
         while (i1 >= 0) {
            i1 = str.indexOf(sep, i0);
            if (i1 >= 0) {
-        	   String found = str.substring(i0, i1);
-        	   if (found.length() > 0) {
-	               if (k == 0)
-	                   strArr.set(0, found);
-	               else
-	                   strArr.add(found);
-	               k++;
-        	   }
-               i0 = i1 + 1;
-           }
+        	   	String found = str.substring(i0, i1);
+				if (found.length() > 0) {
+					if (k == 0)
+						strArr.set(0, found);
+					else
+						strArr.add(found);
+					k++;
+				}
+				i0 = i1 + 1;
+			}
         }
         strArr.add(str.substring(i0));
         if (i < 1)
