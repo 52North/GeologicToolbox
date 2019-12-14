@@ -39,7 +39,10 @@ import org.n52.v3d.triturus.vgis.VgPoint;
 import org.n52.v3d.triturus.vgis.VgTriangle;
 
 /**
- * Orientation objects provide azimuth and dip information about triangles.
+ * Orientation objects provide azimuth and dip information about triangles. 
+ * This class also provides Clar's notation as often used by geologists. 
+ * Moreover <tt>Orientation</tt> objects might be of help carrying out 
+ * exposition or inclination analysis tasks. 
  * 
  * @author Benno Schmidt
  */
@@ -129,10 +132,11 @@ public class Orientation
 	}
 	
 	/**
-	 * calculates the dip value for the triangle given in the constructor. The
-	 * result is given in degrees, i.e. in the range <i>0 ... 90</i>. For a
-	 * horizontal triangle the result will be 0, for a vertical triangle +90. 
-	 * Note that the return value will be 0 if the triangle's area is 0.
+	 * calculates the dip value (inclination) for the triangle given in 
+	 * the constructor. The result is given in degrees, i.e. in the range 
+	 * <i>0 ... 90</i>. For a horizontal triangle the result will be 0, for
+	 * a vertical triangle +90. Note that the return value will be 0 if the 
+	 * triangle's area is 0.
 	 * 
 	 * @return Dip value in degrees 
 	 * @see {@link #hasZeroArea()}
@@ -209,8 +213,9 @@ public class Orientation
 	}
 
 	/**
-	 * provides the azimuth value given in degrees as integer in the range
-	 * <i>0 ... 359</i>. Also see documentation for <tt>this#azimuth</tt>.
+	 * provides the azimuth value (exposition) given in degrees as 
+	 * integer in the range <i>0 ... 359</i>. Also see documentation for 
+	 * <tt>this#azimuth</tt>.
 	 * 
 	 * @return Azimuth in degrees
 	 * @see {@link #azimuth()}
