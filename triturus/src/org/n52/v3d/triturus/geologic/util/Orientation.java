@@ -123,7 +123,6 @@ public class Orientation
 	}
 
 	static private T3dVector crossProduct(T3dVector v1, T3dVector v2)
-		throws T3dException
 	{
 		return new T3dVector(
 				v1.getY() * v2.getZ() - v1.getZ() * v2.getY(),
@@ -172,8 +171,7 @@ public class Orientation
 			return Math.PI / 2.;
 		
 		T3dVector horiz = new T3dVector(dir.getX(), dir.getY(), 0.); 
-		double phi = new T3dVector(0., 0., 0.).angle(dir, horiz); 
-		return phi;
+		return new T3dVector(0., 0., 0.).angle(dir, horiz); 
 	}
 	
 	/**
@@ -292,14 +290,14 @@ public class Orientation
 	
 		int k = (int) Math.round(this.azimuth() / 45.);
 		switch (k) {
-		case 0: case 8: return "N"; 
-		case 1: return "NE"; 
-		case 2: return "E"; 
-		case 3: return "SE"; 
-		case 4: return "S"; 
-		case 5: return "SW"; 
-		case 6: return "W"; 
-		case 7: return "NW"; 
+			case 0: case 8: return "N"; 
+			case 1: return "NE"; 
+			case 2: return "E"; 
+			case 3: return "SE"; 
+			case 4: return "S"; 
+			case 5: return "SW"; 
+			case 6: return "W"; 
+			case 7: return "NW"; 
 		}
 		return "ERROR"; // this code line should never be reached
 	}
