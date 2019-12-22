@@ -32,7 +32,6 @@
  */
 package org.n52.v3d.triturus.geologic.util;
 
-import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.t3dutil.T3dVector;
 import org.n52.v3d.triturus.vgis.T3dSRSException;
 import org.n52.v3d.triturus.vgis.VgPoint;
@@ -51,8 +50,8 @@ public class Orientation
 	private T3dVector dir; 
 	
 	static public double 
-		rad2degr = 180. / Math.PI,
-		rad2gon = 200. / Math.PI;
+		rad2degr = 180./Math.PI,
+		rad2gon = 200./Math.PI;
 	
 	/**
 	 * constructs an orientation object. For triangle coordinates referring to
@@ -201,7 +200,32 @@ public class Orientation
 	 * constructor. The result is given in degrees, i.e. in the range 
 	 * <i>0.0 <= azimuth < 360.0</i>. For a horizontal triangle the result will
 	 * be 0. Note that the return value will be 0 if the triangle's area is 0.
-	 * 
+	 * <br />
+	 * For the x-axis heading East and the y-axis heading North, the azimut is
+	 * given as follows:
+	 * <table>
+	 *   <th>
+	 *     <td>azimuth</td>
+	 *     <td>compass direction</td>
+	 *   </th>
+	 *   <tr>
+	 *     <td>0</td>
+	 *     <td>N</td>
+	 *   </tr>
+	 *   <tr>
+	 *     <td>90</td>
+	 *     <td>E</td>
+	 *   </tr>
+	 *   <tr>
+	 *     <td>180</td>
+	 *     <td>S</td>
+	 *   </tr>
+	 *   <tr>
+	 *     <td>270</td>
+	 *     <td>W</td>
+	 *   </tr>
+	 * </table>
+	 *    
 	 * @return Azimuth value in degrees 
 	 * @see {@link #isPlain()}
 	 * @see {@link #hasZeroArea()
