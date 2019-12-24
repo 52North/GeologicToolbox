@@ -42,7 +42,7 @@ import org.n52.v3d.triturus.vgis.VgTriangle;
 
 /**
  * Geologic Toolbox example application: Demonstrates <<tt>Orientation</tt> 
- * object handling and Clar notation generation
+ * object handling and Clar notation generation.
  * 
  * @author Benno Schmidt
  */
@@ -57,8 +57,8 @@ public class ClarNotation
 		try {
 			VgPoint 
 				p1 = new GmPoint(420000., 5800000., 100.),
-				p2 = new GmPoint(420100., 5800000., 110.),
-				p3 = new GmPoint(419900., 5800100., 100.);
+				p2 = new GmPoint(420100., 5800000., 100.),
+				p3 = new GmPoint(420000., 5800100., 90.);
 			VgTriangle tri = new GmTriangle(p1, p2, p3);
 			tri.setSRS(VgGeomObject.SRSNone);
 
@@ -67,7 +67,7 @@ public class ClarNotation
 			if (orient.hasZeroArea()) 
 				System.out.println("Area is 0.");
 			if (orient.isPlain()) 
-				System.out.println("Triangle plain in xy-plane.");
+				System.out.println("Triangle plain in x-y-plane.");
 			
 			System.out.println(
 					"dip: " + orient.dipInt() + " (" + orient.dip() + ")");
@@ -77,7 +77,7 @@ public class ClarNotation
 					"Clar: " + orient.clarNotation());
 			System.out.println(
 					"Compass direction: " + orient.compassDirection());
-        }
+		}
 		catch (T3dException e) {
 			e.printStackTrace();
 		}

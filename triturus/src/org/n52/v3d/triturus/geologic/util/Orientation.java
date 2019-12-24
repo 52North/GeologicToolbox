@@ -325,4 +325,41 @@ public class Orientation
 		}
 		return "ERROR"; // this code line should never be reached
 	}
+
+	/**
+	 * provides the compass direction corresponding to the given orientation as
+	 * integer-valued class.
+	 * <table>
+	 *   <th>direction</th><th>value</th>
+	 *   <td>N</td><td>1</td>
+	 *   <td>NE</td><td>2</td>
+	 *   <td>E</td><td>3</td>
+	 *   <td>SE</td><td>4</td>
+	 *   <td>S</td><td>5</td>
+	 *   <td>SW</td><td>6</td>
+	 *   <td>W</td><td>7</td>
+	 *   <td>NW</td><td>8</td>
+	 *   <td>-</td><td>0</td>
+	 * </table>
+	 * 
+	 * @return Compass direction class
+	 * @see {@link #isPlain()}
+	 */
+	public int compassDirectionClass() 
+	{
+		if (this.isPlain()) return 0; // "-"
+	
+		int k = (int) Math.round(this.azimuth() / 45.);
+		switch (k) {
+			case 0: case 8: return 1; // N 
+			case 1: return 2; // NE 
+			case 2: return 3; // E 
+			case 3: return 4; // SE
+			case 4: return 5; // S
+			case 5: return 6; // SW
+			case 6: return 7; // W
+			case 7: return 8; // NW
+		}
+		return 0; // this code line should never be reached
+	}
 }
