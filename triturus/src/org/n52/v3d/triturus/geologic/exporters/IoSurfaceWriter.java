@@ -32,6 +32,7 @@
  */
 package org.n52.v3d.triturus.geologic.exporters;
 
+import org.n52.v3d.triturus.core.IoFormatType;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.util.Orientation;
@@ -53,12 +54,6 @@ import java.text.DecimalFormat;
  */
 public class IoSurfaceWriter extends IoAbstractWriter
 {
-    /**
-     * File-format type identifier to be used for export in VTK 4.2 format
-     * (VTK polydata dataset) .
-     */
-    public static final String VTK = "VTK";
-
     private String logString = "";
     private String format;
     private BufferedWriter doc;
@@ -73,11 +68,11 @@ public class IoSurfaceWriter extends IoAbstractWriter
      * file formats, a <tt>T3dNotYetImplException</tt> will be thrown. Currently, 
      * these formats are supported:<br />
      * <ul>
-     * <li><i>VTK:</i> VTK 4.2 format</li>
+     * <li><i>VTK:</i> VTK 4.2 format (polydata dataset)</li>
      * </ul>
      * 
      * @param format Format string (e.g. <tt></tt>&quot;VTK&quot;</tt>)
-     * @see IoSurfaceWriter#VTK
+     * @see IoSurfaceWriter#VTK_DATASET
      */
     public IoSurfaceWriter(String format) {
         logString = this.getClass().getName();
@@ -121,7 +116,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
         throws T3dException, T3dNotYetImplException
     {
         int i = 0;
-        if (format.equalsIgnoreCase(VTK)) i = 1;
+        if (format.equalsIgnoreCase(IoFormatType.VTK_DATASET)) i = 1;
         // --> add more formats here...
 
         try {

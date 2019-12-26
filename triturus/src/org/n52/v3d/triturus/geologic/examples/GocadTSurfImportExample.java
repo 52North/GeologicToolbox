@@ -32,6 +32,7 @@
  */
 package org.n52.v3d.triturus.geologic.examples;
 
+import org.n52.v3d.triturus.core.IoFormatType;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
@@ -60,7 +61,7 @@ public class GocadTSurfImportExample
 			IoGocadTSurfReader reader = new IoGocadTSurfReader();
 			GmSimpleTINFeature surf = reader.read(inFilename).get(0);
 			// ... and generate HTML5/X3DOM output:
-			IoTINWriter writer = new IoTINWriter(IoTINWriter.X3DOM);
+			IoTINWriter writer = new IoTINWriter(IoFormatType.X3DOM);
 			writer.writeToFile(surf, outFilename);
 			System.out.println("Wrote the file \"" + outFilename + "\".");
 		}
