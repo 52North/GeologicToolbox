@@ -38,6 +38,7 @@ import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.util.Orientation;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;
+import org.n52.v3d.triturus.t3dutil.T3dVector;
 import org.n52.v3d.triturus.vgis.VgIndexedTIN;
 
 import java.io.*;
@@ -46,8 +47,10 @@ import java.text.DecimalFormat;
 /** 
  * Writer which exports geologic surfaces (TINs) to files. Various formats such
  * as VTK might be supported. For export to a VTK polygonal dataset, optionally
- * the triangle's dip and azimuth values as well as the compass directions will
- * be exported (see switch {@link this#exportOrientationAttributes}), e.g. to 
+ * the triangle's dip and azimuth values as well as the compass directions and
+ * triangle normal orientations (z-component > 0, i.e. skyward orientation; 
+ * = 0, i.e. vertical triangle; or < 0, i.e. earthward orientation) will be 
+ * exported (see switch {@link this#exportOrientationAttributes}), e.g. to 
  * generate datasets to be used in ParaView.
  * 
  * @author Benno Schmidt
@@ -61,7 +64,8 @@ public class IoSurfaceWriter extends IoAbstractWriter
     public boolean 
     	exportDip = false, 
     	exportAzimuth = false, 
-    	exportCompassDirection = false;
+    	exportCompassDirection = false,
+    	exportOrientationClass = false;
     
     /**
      * Constructor. As a parameter, format type has to be set. For unsupported
@@ -102,6 +106,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
     	this.exportDip = true;
     	this.exportAzimuth = true;
     	this.exportCompassDirection = true;
+    	this.exportOrientationClass = true;
     }
     
     /**
@@ -196,6 +201,25 @@ public class IoSurfaceWriter extends IoAbstractWriter
     				Orientation orient = new Orientation(geom.getTriangle(i)); 
     				int compassDir = orient.compassDirectionClass();
                     wl("" + compassDir);
+                }            	
+            }
+
+            if (this.exportOrientationClass) {
+            	wl("SCALARS ORIENTATION_CLASS int 1");
+            	wl("LOOKUP_TABLE default");
+                for (int i = 0; i < geom.numberOfTriangles(); i++) {
+    				T3dVector orient = geom.getTriangle(i).normal();
+    				int res = -1;
+    				if (orient.getZ() > 0.) {
+    					res = +1;
+    				} else {
+        				if (orient.getZ() < 0.) {
+        					res = 2;
+        				} else {
+        					res = 0;
+        				}
+    				}
+    				wl("" + res);
                 }            	
             }
 
