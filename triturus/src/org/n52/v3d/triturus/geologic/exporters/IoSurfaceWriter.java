@@ -72,7 +72,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
      * file formats, a <tt>T3dNotYetImplException</tt> will be thrown. Currently, 
      * these formats are supported:<br />
      * <ul>
-     * <li><i>VTK:</i> VTK 4.2 format (polydata dataset)</li>
+     * <li><i>VTK:</i> VTK 3.0 format (polydata dataset)</li>
      * </ul>
      * 
      * @param format Format string (e.g. <tt></tt>&quot;VTK&quot;</tt>)
@@ -90,7 +90,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
     /** 
      * sets the format type.
      * 
-     * @param format Format string (e.g. <tt></tt>&quot;VTK&quot;</tt>)
+     * @param format Format string (e.g. <tt></tt>&quot;VTKDataset&quot;</tt>)
      */
     public void setFormatType(String format)
     {

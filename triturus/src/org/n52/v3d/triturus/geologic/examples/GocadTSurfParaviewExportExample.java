@@ -54,7 +54,7 @@ public class GocadTSurfParaviewExportExample
 		new GocadTSurfParaviewExportExample().run();
 	}
 	
-	public void run() 
+	public void run()
 	{ 
 		try {
 			// Read first TSurf model from GOCAD data file...
