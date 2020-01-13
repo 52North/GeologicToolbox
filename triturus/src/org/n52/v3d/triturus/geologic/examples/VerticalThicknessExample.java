@@ -45,7 +45,9 @@ import org.n52.v3d.triturus.gisimplm.GmSimple2dGridGeometry;
 import org.n52.v3d.triturus.gisimplm.GmSimpleElevationGrid;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTetrMesh;
+import org.n52.v3d.triturus.gisimplm.GmSimpleWedgeMesh;
 import org.n52.v3d.triturus.gisimplm.IoTetrMeshWriter;
+import org.n52.v3d.triturus.gisimplm.IoWedgeMeshWriter;
 import org.n52.v3d.triturus.vgis.VgEnvelope;
 import org.n52.v3d.triturus.vgis.VgEquidistGrid;
 import org.n52.v3d.triturus.vgis.VgPoint;
@@ -65,8 +67,9 @@ public class VerticalThicknessExample
 		inFilename2 = "/projects/GeologicToolbox/data/s_geologie_Zechstein_ts",
 		outFilename = "/projects/GeologicToolbox/data/s_geologie_body.vtk"; 
 	private final double cellSize = 500.;
+	private final boolean wedgeMode = true; 
+		// set this switch to generate wedges instead of tetrahedronal cells...
 	
-
 	public static void main(String args[]) {
 		new VerticalThicknessExample().run();
 	}
@@ -107,84 +110,35 @@ public class VerticalThicknessExample
 	        System.out.println("grid1: " + grid1);
 	        System.out.println("grid2: " + grid2);
 	        
-	        // Construct tetrahedronal mesh:
-	        GmSimpleTetrMesh mesh = 
-	        	this.constructTetrahedronalMesh(bbox, grdGeom, grid1, grid2);
+	        if (!wedgeMode) {
+		        // Construct tetrahedronal mesh:
+		        GmSimpleTetrMesh mesh = 
+		        	this.constructTetrahedronalMesh(bbox, grdGeom, grid1, grid2);
+		        // Write tetrahedronal mesh to VTK/ParaView file:
+	            System.out.println("Writing result file \"" + outFilename + "\"...");
+	            IoTetrMeshWriter writer = new IoTetrMeshWriter(IoFormatType.VTK_DATASET);
+	            writer.generateVerticalThicknessAttr();
+	            writer.generateZAttr();
+	            writer.writeToFile(mesh, outFilename);
+	        }
+	        else {
+		        // Construct wedge mesh:
+		        GmSimpleWedgeMesh mesh = 
+		        	this.constructWedgeMesh(bbox, grdGeom, grid1, grid2);
+		        // Write wedge mesh to VTK/ParaView file:
+	            System.out.println("Writing result file \"" + outFilename + "\" (wedge mesh)...");
+	            IoWedgeMeshWriter writer = new IoWedgeMeshWriter(IoFormatType.VTK_DATASET);
+	            writer.generateVerticalThicknessAttr();
+	            writer.generateAssumedThicknessAttr();
+	            writer.generateThicknessDeltaAttr();
+	            writer.writeToFile(mesh, outFilename);
+	        }
 	        
-	        // Write tetrahedronal mesh to VTK/ParaView file:
-            System.out.println("Writing result file \"" + outFilename + "\"...");
-            IoTetrMeshWriter writer = new IoTetrMeshWriter(IoFormatType.VTK_DATASET);
-            writer.generateVerticalThicknessAttr();
-            writer.writeToFile(mesh, outFilename);
             System.out.println("Success!");
 		}
 		catch (T3dException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private GmSimpleTetrMesh constructTetrahedronalMesh(
-		VgEnvelope bbox,
-		VgEquidistGrid grdGeom, 
-		GmSimpleElevationGrid grid1,
-		GmSimpleElevationGrid grid2) 
-	{
-		int 
-			M = grdGeom.numberOfColumns(), 
-			N = grdGeom.numberOfRows();
-		GmSimpleTetrMesh mesh = new GmSimpleTetrMesh();
-		boolean s10, s11, s12, s13, s20, s21, s22, s23;
-		int i10, i11, i12, i13, i20, i21, i22, i23;
-		VgPoint dummy = bbox.getCenterPoint();
-		int ct = 0;
-		for (int jj = 0; jj < M; jj++) {
-			for (int ii = 0; ii < N; ii++) {
-				VgPoint p1 = new GmPoint();
-				if (grid1.isSet(ii, jj))
-					p1.set(grid1.getPoint(ii, jj));
-				else
-					p1.set(dummy);
-				mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
-				if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
-				VgPoint p2 = new GmPoint();
-				if (grid2.isSet(ii, jj))
-					p2.set(grid2.getPoint(ii, jj));
-				else
-					p2.set(dummy);
-				mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
-				if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
-			}
-		}
-		//System.out.println("ct = " + ct);
-		for (int jj = 0; jj < M - 1; jj++) {
-			for (int ii = 0; ii < N - 1; ii++) {
-				s10 = grid1.isSet(ii,     jj);
-				s11 = grid1.isSet(ii,     jj + 1);
-				s12 = grid1.isSet(ii + 1, jj + 1);
-				s13 = grid1.isSet(ii + 1, jj);
-				s20 = grid2.isSet(ii,     jj);
-				s21 = grid2.isSet(ii,     jj + 1);
-				s22 = grid2.isSet(ii + 1, jj + 1);
-				s23 = grid2.isSet(ii + 1, jj);
-				i10 = 2 * (ii       + N *  jj     );
-				i11 = 2 * (ii       + N * (jj + 1));
-				i12 = 2 * ((ii + 1) + N * (jj + 1));
-				i13 = 2 * ((ii + 1) + N *  jj     );
-				i20 = 2 * (ii       + N *  jj     ) + 1;
-				i21 = 2 * (ii       + N * (jj + 1)) + 1;
-				i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
-				i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
-				if (s10 && s11 && s12 && s13 && s20 && s21 && s22 & s23) {
-					mesh.addTetrahedron(i10, i11, i13, i20);
-					mesh.addTetrahedron(i12, i13, i11, i22);
-					mesh.addTetrahedron(i21, i22, i20, i11);
-					mesh.addTetrahedron(i23, i20, i22, i13);
-					mesh.addTetrahedron(i11, i20, i22, i13);
-				}	
-			}
-		}
-		System.out.println(mesh);
-		return mesh;
 	}
 
 	private void provideFileInformation() {
@@ -223,5 +177,132 @@ public class VerticalThicknessExample
 		GmSimple2dGridGeometry res = new GmSimple2dGridGeometry(
 			ncols, nrows, origin, cellSize, cellSize);
         return res;
+	}
+	
+	private GmSimpleTetrMesh constructTetrahedronalMesh(
+			VgEnvelope bbox,
+			VgEquidistGrid grdGeom, 
+			GmSimpleElevationGrid grid1,
+			GmSimpleElevationGrid grid2) 
+	{
+		int 
+			M = grdGeom.numberOfColumns(), 
+			N = grdGeom.numberOfRows();
+		GmSimpleTetrMesh mesh = new GmSimpleTetrMesh();
+		VgPoint dummy = bbox.getCenterPoint();
+		int ct = 0;
+		for (int jj = 0; jj < M; jj++) {
+			for (int ii = 0; ii < N; ii++) {
+				VgPoint p1 = new GmPoint();
+				if (grid1.isSet(ii, jj))
+					p1.set(grid1.getPoint(ii, jj));
+				else
+					p1.set(dummy);
+				mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
+				if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
+				VgPoint p2 = new GmPoint();
+				if (grid2.isSet(ii, jj))
+					p2.set(grid2.getPoint(ii, jj));
+				else
+					p2.set(dummy);
+				mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
+				if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
+			}
+		}
+		//System.out.println("ct = " + ct);
+		boolean s10, s11, s12, s13, s20, s21, s22, s23;
+		int i10, i11, i12, i13, i20, i21, i22, i23;
+		for (int jj = 0; jj < M - 1; jj++) {
+			for (int ii = 0; ii < N - 1; ii++) {
+				s10 = grid1.isSet(ii,     jj);
+				s11 = grid1.isSet(ii,     jj + 1);
+				s12 = grid1.isSet(ii + 1, jj + 1);
+				s13 = grid1.isSet(ii + 1, jj);
+				s20 = grid2.isSet(ii,     jj);
+				s21 = grid2.isSet(ii,     jj + 1);
+				s22 = grid2.isSet(ii + 1, jj + 1);
+				s23 = grid2.isSet(ii + 1, jj);
+				i10 = 2 * ( ii      + N *  jj     );
+				i11 = 2 * ( ii      + N * (jj + 1));
+				i12 = 2 * ((ii + 1) + N * (jj + 1));
+				i13 = 2 * ((ii + 1) + N *  jj     );
+				i20 = 2 * ( ii      + N *  jj     ) + 1;
+				i21 = 2 * ( ii      + N * (jj + 1)) + 1;
+				i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
+				i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
+				if (s10 && s11 && s12 && s13 && s20 && s21 && s22 & s23) {
+					mesh.addTetrahedron(i10, i11, i13, i20);
+					mesh.addTetrahedron(i12, i13, i11, i22);
+					mesh.addTetrahedron(i21, i22, i20, i11);
+					mesh.addTetrahedron(i23, i20, i22, i13);
+					mesh.addTetrahedron(i11, i20, i22, i13);
+				}	
+			}
+		}
+		System.out.println(mesh);
+		return mesh;
+	}
+
+	private GmSimpleWedgeMesh constructWedgeMesh(
+			VgEnvelope bbox,
+			VgEquidistGrid grdGeom, 
+			GmSimpleElevationGrid grid1,
+			GmSimpleElevationGrid grid2) 
+	{
+		int 
+			M = grdGeom.numberOfColumns(), 
+			N = grdGeom.numberOfRows();
+		GmSimpleWedgeMesh mesh = new GmSimpleWedgeMesh();
+		VgPoint dummy = bbox.getCenterPoint();
+		int ct = 0;
+		for (int jj = 0; jj < M; jj++) {
+			for (int ii = 0; ii < N; ii++) {
+				VgPoint p1 = new GmPoint();
+				if (grid1.isSet(ii, jj))
+					p1.set(grid1.getPoint(ii, jj));
+				else
+					p1.set(dummy);
+				mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
+				if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
+				VgPoint p2 = new GmPoint();
+				if (grid2.isSet(ii, jj))
+					p2.set(grid2.getPoint(ii, jj));
+				else
+					p2.set(dummy);
+				mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
+				if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
+			}
+		}
+		//System.out.println("ct = " + ct);
+		boolean s10, s11, s12, s13, s20, s21, s22, s23;
+		int i10, i11, i12, i13, i20, i21, i22, i23;
+		for (int jj = 0; jj < M - 1; jj++) {
+			for (int ii = 0; ii < N - 1; ii++) {
+				s10 = grid1.isSet(ii,     jj);
+				s11 = grid1.isSet(ii,     jj + 1);
+				s12 = grid1.isSet(ii + 1, jj + 1);
+				s13 = grid1.isSet(ii + 1, jj);
+				s20 = grid2.isSet(ii,     jj);
+				s21 = grid2.isSet(ii,     jj + 1);
+				s22 = grid2.isSet(ii + 1, jj + 1);
+				s23 = grid2.isSet(ii + 1, jj);
+				i10 = 2 * ( ii      + N *  jj     );
+				i11 = 2 * ( ii      + N * (jj + 1));
+				i12 = 2 * ((ii + 1) + N * (jj + 1));
+				i13 = 2 * ((ii + 1) + N *  jj     );
+				i20 = 2 * ( ii      + N *  jj     ) + 1;
+				i21 = 2 * ( ii      + N * (jj + 1)) + 1;
+				i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
+				i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
+				if (s10 && s11 && s13 && s20 && s21 && s23) {
+					mesh.addWedge(i10, i11, i13, i20, i21, i23);
+				}	
+				if (s11 && s12 && s13 && s21 && s22 && s23) {
+					mesh.addWedge(i11, i12, i13, i21, i22, i23);
+				}	
+			}
+		}
+		System.out.println(mesh);
+		return mesh;
 	}
 }
