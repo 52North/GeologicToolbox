@@ -122,22 +122,39 @@ public class IoSurfaceWriter extends IoAbstractWriter
     {
         int i = 0;
         if (format.equalsIgnoreCase(IoFormatType.VTK_DATASET)) i = 1;
+        else if(format.equalsIgnoreCase(IoFormatType.SHP)) i = 2;
         // --> add more formats here...
 
         try {
             switch (i) {
                 case 1: this.writeVTKPolydata(tin, filename); break;
+                case 2: this.writeSHPPolydata(tin, filename); break;
                 // --> add more formats here...
 
                 default: throw new T3dNotYetImplException("Unsupported file format");
             }
         }
-        catch (T3dException e) {
-            throw e;
+        catch (T3dException | IOException e) {
+            e.printStackTrace();
         }
     }
     
+    private void writeSHPPolydata(GmSimpleTINFeature tin, String filename) throws T3dException, IOException{
+        IoShapeWriter shpWriter = new IoShapeWriter();
+        shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON); // initialize featureType you want to write
+//      here: define all featureTypeAttributes -> shpWriter.addXXXFeatureTypeAttribute("attributeName");
+        // -->
+        shpWriter.addIntegerFeatureTypeAttribute("Test_int");
+        shpWriter.addStringFeatureTypeAttribute("Test_str");
+        // <--
+        shpWriter.buildFeatureType();                           // when all attribute definitions are complete, create final feature type definition
+        shpWriter.createSimplePolygonFeatures(tin);             // add tin data you want to write
+        shpWriter.writeShapeFile(filename);                     // finally write your shape file
+        
+    }
+    
     private void writeVTKPolydata(GmSimpleTINFeature tin, String filename) 
+    
     	throws T3dException
     {
         try {
