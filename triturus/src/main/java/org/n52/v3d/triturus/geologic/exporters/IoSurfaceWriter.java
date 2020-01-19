@@ -43,6 +43,7 @@ import org.n52.v3d.triturus.vgis.VgIndexedTIN;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import org.opengis.referencing.FactoryException;
 
 /** 
  * Writer which exports geologic surfaces (TINs) to files. Various formats such
@@ -134,14 +135,14 @@ public class IoSurfaceWriter extends IoAbstractWriter
                 default: throw new T3dNotYetImplException("Unsupported file format");
             }
         }
-        catch (T3dException | IOException e) {
+        catch (T3dException | IOException | FactoryException e) {
             e.printStackTrace();
         }
     }
     
-    private void writeSHPPolydata(GmSimpleTINFeature tin, String filename) throws T3dException, IOException{
+    private void writeSHPPolydata(GmSimpleTINFeature tin, String filename) throws T3dException, IOException, T3dNotYetImplException, FactoryException{
         IoShapeWriter shpWriter = new IoShapeWriter();
-        shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON); // initialize featureType you want to write
+        shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, "23033"); // initialize featureType you want to write
 //      here: define all featureTypeAttributes -> shpWriter.addXXXFeatureTypeAttribute("attributeName");
         // -->
         shpWriter.addIntegerFeatureTypeAttribute("Test_int");

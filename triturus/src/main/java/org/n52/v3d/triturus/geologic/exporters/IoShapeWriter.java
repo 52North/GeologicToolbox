@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -17,7 +19,9 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.GeometryBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.CoordinateXYM;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -31,6 +35,9 @@ import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;
 import org.n52.v3d.triturus.vgis.VgPoint;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * @author Moritz Wollenhaupt
@@ -44,7 +51,6 @@ public class IoShapeWriter extends IoAbstractWriter {
     private SimpleFeatureTypeBuilder sftBuilder = null;
     private SimpleFeatureType sft = null;
     private SimpleFeatureBuilder sfBuilder = null;
-    private final GeometryFactory geomFactory;
     private List<SimpleFeature> features;
 
     public static final String POINT = "Point";
@@ -54,14 +60,17 @@ public class IoShapeWriter extends IoAbstractWriter {
 
     public IoShapeWriter() {
         logString = this.getClass().getName();
-        this.geomFactory = JTSFactoryFinder.getGeometryFactory();
         this.features = new ArrayList<>();
     }
 
-    public void initFeatureType(String featureType) throws T3dNotYetImplException, T3dException {
+    public void initFeatureType(String featureType, String epsg) throws T3dNotYetImplException, T3dException, FactoryException {
         this.sftBuilder = new SimpleFeatureTypeBuilder();
         this.sftBuilder.setName("GeologicToolbox-FeatureTypeBuilder");
-        this.sftBuilder.setCRS(DefaultGeographicCRS.WGS84);
+        CRSAuthorityFactory crsAuthorityFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("EPSG", null);
+        CoordinateReferenceSystem crs = crsAuthorityFactory.createCoordinateReferenceSystem(epsg);
+        this.sftBuilder.setCRS(crs);
+//        this.sftBuilder.setCRS(DefaultGeographicCRS.WGS84_3D);
+        
         switch (featureType) {
             case POINT:
                 throw new T3dNotYetImplException("FeatureType " + POINT + "not yet implemented!");
@@ -117,17 +126,21 @@ public class IoShapeWriter extends IoAbstractWriter {
             throw new T3dException("You need to build the shapes feature type before adding data to it!");
         }
         GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
-
+        
+        GeometryBuilder gb = new GeometryBuilder();
+        
         for (int i = 0; i < geom.numberOfTriangles(); i++) {
             int[] triIdx = geom.getTriangleVertexIndices(i);
-            CoordinateXYM[] points = new CoordinateXYM[triIdx.length + 1]; // +1 -> last point equals first point
-            for (int j = 0; j < triIdx.length; j++) {
-                VgPoint p = geom.getPoint(triIdx[j]);
-                points[j] = new CoordinateXYM(p.getX(), p.getY(), p.getZ());
+            
+            double[] points = new double[(triIdx.length+1)*3];
+            for(int j = 0; j < points.length; j+=3) {
+                points[j] = geom.getPoint(triIdx[(j/3)%3]).getX();
+                points[j+1] = geom.getPoint(triIdx[(j/3)%3]).getY();
+                points[j+2] = geom.getPoint(triIdx[(j/3)%3]).getZ();
             }
-            points[points.length - 1] = points[0];
-
-            Polygon poly = geomFactory.createPolygon(points);
+            
+            Polygon poly = gb.polygonZ(points);
+            
             this.sfBuilder.add(poly);
             // here: add polygon attributes -> sfBuilder.add(xxx);
             // --> 
