@@ -141,8 +141,9 @@ public class IoShapeWriter extends IoAbstractWriter {
             }
             
             Polygon poly = gb.polygonZ(points);
+            MultiPolygon mPoly = gb.multiPolygon(new Polygon[]{poly});
             
-            this.sfBuilder.add(poly);
+            this.sfBuilder.add(mPoly);
             // here: add polygon attributes -> sfBuilder.add(xxx);
             // --> 
             this.sfBuilder.add(i);
