@@ -133,10 +133,11 @@ public class IoShapeWriter extends IoAbstractWriter {
             int[] triIdx = geom.getTriangleVertexIndices(i);
             
             double[] points = new double[(triIdx.length+1)*3];
-            for(int j = 0; j < points.length; j+=3) {
-                points[j] = geom.getPoint(triIdx[(j/3)%3]).getX();
-                points[j+1] = geom.getPoint(triIdx[(j/3)%3]).getY();
-                points[j+2] = geom.getPoint(triIdx[(j/3)%3]).getZ();
+            int l = triIdx.length;
+            for(int j = 0; j < points.length; j+=3) {   // 3 = idx of x, y, z in points[]
+                points[j] = geom.getPoint(triIdx[(j/3)%l]).getX();
+                points[j+1] = geom.getPoint(triIdx[(j/3)%l]).getY();
+                points[j+2] = geom.getPoint(triIdx[(j/3)%l]).getZ();
             }
             
             Polygon poly = gb.polygonZ(points);
