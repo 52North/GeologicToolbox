@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -20,11 +18,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.GeometryBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.ReferencingFactoryFinder;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.locationtech.jts.geom.CoordinateXYM;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.n52.v3d.triturus.core.T3dException;
@@ -32,7 +26,6 @@ import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINGeometry;
 import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;
-import org.n52.v3d.triturus.vgis.VgPoint;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
@@ -69,7 +62,6 @@ public class IoShapeWriter extends IoAbstractWriter {
         CRSAuthorityFactory crsAuthorityFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("EPSG", null);
         CoordinateReferenceSystem crs = crsAuthorityFactory.createCoordinateReferenceSystem(epsg);
         this.sftBuilder.setCRS(crs);
-//        this.sftBuilder.setCRS(DefaultGeographicCRS.WGS84_3D);
         
         switch (featureType) {
             case POINT:
@@ -121,7 +113,7 @@ public class IoShapeWriter extends IoAbstractWriter {
         }
     }
 
-    public void createSimplePolygonFeatures(GmSimpleTINFeature tin) throws T3dException {
+    public void createPolygonZFeatures(GmSimpleTINFeature tin) throws T3dException {
         if (!this.built) {
             throw new T3dException("You need to build the shapes feature type before adding data to it!");
         }

@@ -37,7 +37,6 @@ import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.geologic.exporters.IoSurfaceWriter;
 import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
-import org.n52.v3d.triturus.gisimplm.IoTINWriter;
 
 /**
  * Geologic Toolbox example application: Reads a GOCAD TSurf TIN and writes it

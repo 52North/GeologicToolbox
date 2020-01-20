@@ -149,7 +149,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
         shpWriter.addStringFeatureTypeAttribute("Test_str");
         // <--
         shpWriter.buildFeatureType();                           // when all attribute definitions are complete, create final feature type definition
-        shpWriter.createSimplePolygonFeatures(tin);             // add tin data you want to write
+        shpWriter.createPolygonZFeatures(tin);                  // add tin data you want to write
         shpWriter.writeShapeFile(filename);                     // finally write your shape file
         
     }
