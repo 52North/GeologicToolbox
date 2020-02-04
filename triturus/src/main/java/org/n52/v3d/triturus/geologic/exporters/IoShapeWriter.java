@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
+import org.n52.v3d.triturus.geologic.util.ShapeFileAttribute;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINGeometry;
 import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;
@@ -45,6 +46,7 @@ public class IoShapeWriter extends IoAbstractWriter {
     private SimpleFeatureType sft = null;
     private SimpleFeatureBuilder sfBuilder = null;
     private List<SimpleFeature> features;
+    private List<ShapeFileAttribute> attributes;
 
     public static final String POINT = "Point";
     public static final String MULTI_POINT = "MultiPoint";
@@ -55,6 +57,16 @@ public class IoShapeWriter extends IoAbstractWriter {
         logString = this.getClass().getName();
         this.features = new ArrayList<>();
     }
+    
+    public void initFeatureType(String featureType, String epsg, List<ShapeFileAttribute> attributes) throws T3dNotYetImplException, T3dException, FactoryException {
+        initFeatureType(featureType, epsg);
+        this.attributes = attributes;
+        if (this.attributes != null) {
+            for (ShapeFileAttribute attribute : this.attributes) {
+                attribute.init(sftBuilder);
+            }
+        }
+    }
 
     public void initFeatureType(String featureType, String epsg) throws T3dNotYetImplException, T3dException, FactoryException {
         this.sftBuilder = new SimpleFeatureTypeBuilder();
@@ -62,7 +74,7 @@ public class IoShapeWriter extends IoAbstractWriter {
         CRSAuthorityFactory crsAuthorityFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("EPSG", null);
         CoordinateReferenceSystem crs = crsAuthorityFactory.createCoordinateReferenceSystem(epsg);
         this.sftBuilder.setCRS(crs);
-        
+
         switch (featureType) {
             case POINT:
                 throw new T3dNotYetImplException("FeatureType " + POINT + "not yet implemented!");
@@ -77,6 +89,8 @@ public class IoShapeWriter extends IoAbstractWriter {
             default:
                 throw new T3dException("Unsupported FeatureType!");
         }
+        
+
     }
 
     public void writeShapeFile(String filename) throws T3dException, IOException {
@@ -107,8 +121,7 @@ public class IoShapeWriter extends IoAbstractWriter {
             } finally {
                 transaction.close();
             }
-        }
-        else {
+        } else {
             throw new T3dException(typeName + " does not support read/write access");
         }
     }
@@ -118,28 +131,31 @@ public class IoShapeWriter extends IoAbstractWriter {
             throw new T3dException("You need to build the shapes feature type before adding data to it!");
         }
         GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
-        
+
         GeometryBuilder gb = new GeometryBuilder();
-        
+
         for (int i = 0; i < geom.numberOfTriangles(); i++) {
             int[] triIdx = geom.getTriangleVertexIndices(i);
-            
-            double[] points = new double[(triIdx.length+1)*3];
+
+            double[] points = new double[(triIdx.length + 1) * 3];
             int l = triIdx.length;
-            for(int j = 0; j < points.length; j+=3) {   // 3 = idx of x, y, z in points[]
-                points[j] = geom.getPoint(triIdx[(j/3)%l]).getX();
-                points[j+1] = geom.getPoint(triIdx[(j/3)%l]).getY();
-                points[j+2] = geom.getPoint(triIdx[(j/3)%l]).getZ();
+            for (int j = 0; j < points.length; j += 3) {   // 3 = idx of x, y, z in points[]
+                points[j] = geom.getPoint(triIdx[(j / 3) % l]).getX();
+                points[j + 1] = geom.getPoint(triIdx[(j / 3) % l]).getY();
+                points[j + 2] = geom.getPoint(triIdx[(j / 3) % l]).getZ();
             }
-            
+
             Polygon poly = gb.polygonZ(points);
             MultiPolygon mPoly = gb.multiPolygon(new Polygon[]{poly});
-            
-            this.sfBuilder.add(mPoly);
+
+            this.sfBuilder.add(mPoly);  // add geometry at first!
             // here: add polygon attributes -> sfBuilder.add(xxx);
             // --> 
-            this.sfBuilder.add(i);
-            this.sfBuilder.add("StringAttribute " + i);
+            if (attributes != null) {
+                for (ShapeFileAttribute attribute : attributes) {
+                    attribute.calcAttributes(sfBuilder, points);
+                }
+            }
             // <--
             SimpleFeature feature = sfBuilder.buildFeature(null);
             this.features.add(feature);

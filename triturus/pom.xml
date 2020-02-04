@@ -75,7 +75,7 @@
         </repository>
     </repositories>
     
-    <build>
+<!--    <build>
         <plugins>
             <plugin>
                 <inherited>true</inherited>
@@ -87,6 +87,6 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 
 </project>
