@@ -16,18 +16,21 @@ Currently, this functionality is available as ArcGIS Pro tools.
 - Import of DUDE TIN files (RAG-specific format)
 - Import of models in VTK format
 - Import of borehole data in BIF2 format (RAG-specific format)
-- Cross-section generation 
+- Cross-section generation (on rasterized triangle meshes only)
 - Extraction of topological model boundaries
 - Surface-layer intersection check utility (prototype implementation)
 - Voxel-element generation between surfaces (prototype implementations)
 
 It is planned to add more functionality in the near future.
 
-### Java helpers
+### 52n GeologicToolbox for Java 
 Based on the 52n Triturus framework (see https://github.com/52North/triturus) additionally some Java helpers are provided. 
 Currently, this functionality has been realized: 
-- Checking of GOCAD project files 
+- Checking of GOCAD project files
 - Access to GOCAD TSurf data
+- Transformation of surface data into simple ASCII formats, e.g. VTK (e.g., for use in [ParaView](https://www.paraview.org/),
+X3D, or Wavefront OBJ
+- Orientation analysis tools (incl. Clar notation support)
 - Simple HTML5/WebGL-based visualization (via X3DOM) 
 
 ## License information
@@ -46,7 +49,7 @@ is now available in the catalog, under "Project", "Toolboxes". It contains the d
 of a script. Here you have to check the box "Import script".
 That's all!
 
-### Java helpers (for Java Developers)
+### GeologicToolbox for 52n Triturus (for Java Developers)
 Here the "quick start" instructions are given:
 1. Install Git, e.g. Git for Windows (https://gitforwindows.org/) and TortoiseGit (see https://tortoisegit.org/).
 2. Check out the 52n Triturus source code, e.g. by starting TortoiseGit and giving the repository name: 
@@ -72,4 +75,3 @@ If you encounter any issues with the software or if you would like to see certai
 - Benno Schmidt, Bochum University of Applied Sciences, Geovisualization Lab (benno.schmidt@hs-bochum.de)
 - Holger Lipke, ESRI Deutschland GmbH (h.lipke@esri.de)
 - Johannes Ruban (johannes.ruban@hs-bochum.de)
-- Till Riemenschneider, Bochum University of Applied Sciences, Department of Geodesy (till.riemenschneider@hs-bochum.de)
