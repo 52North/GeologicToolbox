@@ -41,8 +41,8 @@ import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.exporters.IoShapeWriter;
 import org.n52.v3d.triturus.geologic.exporters.IoSurfaceWriter;
 import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
-import org.n52.v3d.triturus.geologic.util.ClarNotationShapeFileAttribute;
-import org.n52.v3d.triturus.geologic.util.ShapeFileAttribute;
+import org.n52.v3d.triturus.geologic.exporters.util.ClarNotationShapeFileAttribute;
+import org.n52.v3d.triturus.geologic.exporters.util.ShapeFileAttribute;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.opengis.referencing.FactoryException;
 
@@ -51,7 +51,7 @@ import org.opengis.referencing.FactoryException;
  */
 public class GocadTSurfClarNotationToShp {
 
-    private final String inFilename = "res/s_geologie_Rotliegend_ts.dat";
+    private final String inFilename = "res/s_geologie_Rotliegend_ts.ts";
     private final String outFilename = "res/s_geologie_Rotliegend_ts.shp";
 
     public static void main(String args[]) {
@@ -65,7 +65,7 @@ public class GocadTSurfClarNotationToShp {
             GmSimpleTINFeature surf = reader.read(inFilename).get(0);
             // ... and generate Shape output:
             IoShapeWriter shpWriter = new IoShapeWriter();
-            ClarNotationShapeFileAttribute clarNotationAttribute = new ClarNotationShapeFileAttribute(true, true, true, true, true, true, 0);
+            ClarNotationShapeFileAttribute clarNotationAttribute = new ClarNotationShapeFileAttribute(true, true, true, true);
             List<ShapeFileAttribute> attributes = new ArrayList<>();
             attributes.add(clarNotationAttribute);
             shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, "23033", attributes);

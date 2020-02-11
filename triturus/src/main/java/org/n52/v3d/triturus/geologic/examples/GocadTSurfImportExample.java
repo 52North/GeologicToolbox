@@ -32,6 +32,7 @@
  */
 package org.n52.v3d.triturus.geologic.examples;
 
+import java.util.List;
 import org.n52.v3d.triturus.core.IoFormatType;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.geologic.exporters.IoSurfaceWriter;
@@ -46,7 +47,7 @@ import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
  */
 public class GocadTSurfImportExample {
 
-    private final String inFilename = "res/s_geologie_Rotliegend_ts.dat";
+    private final String inFilename = "res/s_geologie_Rotliegend_ts.ts";
     private final String outFilename = "res/s_geologie_Rotliegend_ts.shp";
 
 
@@ -58,11 +59,13 @@ public class GocadTSurfImportExample {
         try {
             // Read first TSurf model from GOCAD data file...
             IoGocadTSurfReader reader = new IoGocadTSurfReader();
-            GmSimpleTINFeature surf = reader.read(inFilename).get(0);
+            List<GmSimpleTINFeature> a = reader.read(inFilename);
+            System.out.println(a.get(0).getName());
+//            GmSimpleTINFeature surf = reader.read(inFilename).get(0);
             // ... and generate Shape output:
-            IoSurfaceWriter writer = new IoSurfaceWriter(IoFormatType.SHP);
-            writer.writeToFile(surf, outFilename);
-            System.out.println("Wrote the file \"" + outFilename + "\".");
+//            IoSurfaceWriter writer = new IoSurfaceWriter(IoFormatType.SHP);
+//            writer.writeToFile(surf, outFilename);
+//            System.out.println("Wrote the file \"" + outFilename + "\".");
         } catch (T3dException e) {
             e.printStackTrace();
         }

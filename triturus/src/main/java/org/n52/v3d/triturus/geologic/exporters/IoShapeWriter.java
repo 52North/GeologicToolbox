@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
-import org.n52.v3d.triturus.geologic.util.ShapeFileAttribute;
+import org.n52.v3d.triturus.geologic.exporters.util.ShapeFileAttribute;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINGeometry;
 import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;

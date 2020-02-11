@@ -1,4 +1,4 @@
-package org.n52.v3d.triturus.geologic.util;
+package org.n52.v3d.triturus.geologic.exporters.util;
 
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
