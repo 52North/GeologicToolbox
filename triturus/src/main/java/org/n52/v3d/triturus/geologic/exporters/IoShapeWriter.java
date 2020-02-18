@@ -133,7 +133,6 @@ public class IoShapeWriter extends IoAbstractWriter {
         GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
 
         GeometryBuilder gb = new GeometryBuilder();
-
         for (int i = 0; i < geom.numberOfTriangles(); i++) {
             int[] triIdx = geom.getTriangleVertexIndices(i);
 
