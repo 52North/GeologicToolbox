@@ -129,29 +129,14 @@ public class IoSurfaceWriter extends IoAbstractWriter
         try {
             switch (i) {
                 case 1: this.writeVTKPolydata(tin, filename); break;
-                case 2: this.writeSHPPolydata(tin, filename); break;
                 // --> add more formats here...
 
                 default: throw new T3dNotYetImplException("Unsupported file format");
             }
         }
-        catch (T3dException | IOException | FactoryException e) {
+        catch (T3dException e) {
             e.printStackTrace();
         }
-    }
-    
-    private void writeSHPPolydata(GmSimpleTINFeature tin, String filename) throws T3dException, IOException, T3dNotYetImplException, FactoryException{
-        IoShapeWriter shpWriter = new IoShapeWriter();
-        shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, "23033"); // initialize featureType you want to write
-//      here: define all featureTypeAttributes -> shpWriter.addXXXFeatureTypeAttribute("attributeName");
-        // -->
-        shpWriter.addIntegerFeatureTypeAttribute("Test_int");
-        shpWriter.addStringFeatureTypeAttribute("Test_str");
-        // <--
-        shpWriter.buildFeatureType();                           // when all attribute definitions are complete, create final feature type definition
-        shpWriter.createPolygonZFeatures(tin);                  // add tin data you want to write
-        shpWriter.writeShapeFile(filename);                     // finally write your shape file
-        
     }
     
     private void writeVTKPolydata(GmSimpleTINFeature tin, String filename) 

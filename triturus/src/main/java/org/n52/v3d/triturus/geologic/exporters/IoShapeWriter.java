@@ -34,20 +34,25 @@ import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
+ * ShapeWriter using GeoTools for writing shape files
+ *
  * @author Moritz Wollenhaupt
  */
 public class IoShapeWriter extends IoAbstractWriter {
 
     private final String logString;
+    // booleans used for execution in correct order
     private boolean initialized = false;
     private boolean built = false;
     private boolean dataAvailable = false;
-    private SimpleFeatureTypeBuilder sftBuilder = null;
+    private SimpleFeatureTypeBuilder sftBuilder = null; // builder for the FeatureType you want to use
     private SimpleFeatureType sft = null;
-    private SimpleFeatureBuilder sfBuilder = null;
+    private SimpleFeatureBuilder sfBuilder = null;      // builder for the Features you want to store
     private List<SimpleFeature> features;
+    // a list of attribute types that correspond to the columns of the file
     private List<ShapeFileAttribute> attributes;
 
+    // Identifiers for possible Geometry-Types
     public static final String POINT = "Point";
     public static final String MULTI_POINT = "MultiPoint";
     public static final String MULTI_LINE_STRING = "MultiLineString";
@@ -57,7 +62,20 @@ public class IoShapeWriter extends IoAbstractWriter {
         logString = this.getClass().getName();
         this.features = new ArrayList<>();
     }
-    
+
+    /**
+     * First Step for writing a shape file is initializing the FeatureType. Here
+     * you have to choose the concrete geometry type you want to store, the CRS
+     * by giving a EPSG-String. Further you have to pass a list of
+     * ShapeFileAttributes. Here the columns in file to be created are generated
+     *
+     * @param featureType Identifier for what kind of geometry you want to store
+     * @param epsg The CRS where you want to save your file
+     * @param attributes The shape file's attributes
+     * @throws T3dNotYetImplException
+     * @throws T3dException
+     * @throws FactoryException
+     */
     public void initFeatureType(String featureType, String epsg, List<ShapeFileAttribute> attributes) throws T3dNotYetImplException, T3dException, FactoryException {
         initFeatureType(featureType, epsg);
         this.attributes = attributes;
@@ -68,13 +86,27 @@ public class IoShapeWriter extends IoAbstractWriter {
         }
     }
 
+    /**
+     * First Step for writing a shape file is initializing the FeatureType. Here
+     * you have to choose the concrete geometry type you want to store, the CRS
+     * by giving a EPSG-String. No attributes were stored this way. Only writing
+     * geometry
+     *
+     * @param featureType Identifier for what kind of geometry you want to store
+     * @param epsg The CRS where you want to save your file
+     * @throws T3dNotYetImplException
+     * @throws T3dException
+     * @throws FactoryException
+     */
     public void initFeatureType(String featureType, String epsg) throws T3dNotYetImplException, T3dException, FactoryException {
+        // create new SFTBuilder and assign a name
         this.sftBuilder = new SimpleFeatureTypeBuilder();
         this.sftBuilder.setName("GeologicToolbox-FeatureTypeBuilder");
+        // adjust the correct CRS
         CRSAuthorityFactory crsAuthorityFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("EPSG", null);
         CoordinateReferenceSystem crs = crsAuthorityFactory.createCoordinateReferenceSystem(epsg);
         this.sftBuilder.setCRS(crs);
-
+        // the first column of a shape file has always to contain the geometry
         switch (featureType) {
             case POINT:
                 throw new T3dNotYetImplException("FeatureType " + POINT + "not yet implemented!");
@@ -84,22 +116,101 @@ public class IoShapeWriter extends IoAbstractWriter {
                 throw new T3dNotYetImplException("FeatureType " + MULTI_LINE_STRING + "not yet implemented!");
             case MULTI_POLYGON:
                 this.sftBuilder.add("the_geom", MultiPolygon.class);
-                this.initialized = true;
+                this.initialized = true;    // FeatureTypeBuilder-init complete
                 break;
             default:
                 throw new T3dException("Unsupported FeatureType!");
         }
-        
-
     }
 
-    public void writeShapeFile(String filename) throws T3dException, IOException {
+    /**
+     * Second step for writing a shape file. Once the geometry- and
+     * attribute-columns have been defined, a SimpleFeatureBuilder (building the
+     * geom + adding attributes to them) must be created on the basis of the
+     * SimpleFeatureTypeBuilder
+     *
+     * @throws T3dException
+     */
+    public void buildFeatureType() throws T3dException {
+        if (this.initialized) {
+            this.sft = sftBuilder.buildFeatureType();
+            this.sfBuilder = new SimpleFeatureBuilder(sft);
+            this.built = true;
+        } else {
+            throw new T3dException("You need to initialize a featureType before building it!");
+        }
+    }
+
+    /**
+     * Third step for writing a shape file. In this case a tin is written to a
+     * shape file. You have to write your own method in this way, if you want to
+     * store other geometries
+     *
+     * @param tin The Tin instance you want to write into the shape file
+     * @throws T3dException
+     */
+    public void createPolygonZFeatures(GmSimpleTINFeature tin) throws T3dException {
+        // check correct execution order
+        if (!this.built) {
+            throw new T3dException("You need to build the shapes feature type before adding data to it!");
+        }
+        // Cast object for access of points/triangles
+        GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
+
+        // GeoTool's GeometryBuilder builds geometries for you by giving them coordinates
+        GeometryBuilder gb = new GeometryBuilder();
+        // iterate all triangles
+        for (int i = 0; i < geom.numberOfTriangles(); i++) {
+            // internal every point is accessed by it's index
+            int[] triIdx = geom.getTriangleVertexIndices(i);
+
+            // Store the X, Y and Z coordinates of each vertex in an array
+            double[] points = new double[(triIdx.length + 1) * 3];
+            int l = triIdx.length;
+            for (int j = 0; j < points.length; j += 3) {   // 3 = idx of x, y, z in points[]
+                points[j] = geom.getPoint(triIdx[(j / 3) % l]).getX();
+                points[j + 1] = geom.getPoint(triIdx[(j / 3) % l]).getY();
+                points[j + 2] = geom.getPoint(triIdx[(j / 3) % l]).getZ();
+            }
+
+            // create a new polygon -> you have to wrap it in an multiPolygon, otherwise you won't get a threedimensional geometry representation
+            // a shape file only knows the data type MultiPolygon
+            Polygon poly = gb.polygonZ(points);
+            MultiPolygon mPoly = gb.multiPolygon(new Polygon[]{poly});
+
+            this.sfBuilder.add(mPoly);  // add geometry at first!
+            // now all shape file attributes will be calculated. 
+            // it is important to store them in the same order than the shape file's table columns were created!
+            if (attributes != null) {
+                for (ShapeFileAttribute attribute : attributes) {
+                    attribute.calcAttributes(sfBuilder, points);
+                }
+            }
+            // finally build your feature and add it to the feature collection you want to write 
+            SimpleFeature feature = sfBuilder.buildFeature(null);
+            this.features.add(feature);
+        }
+        dataAvailable = true;
+    }
+
+    /**
+     * Foruth and last step to write a shape file. This is where the Features
+     * stored in the FeatureCollection are written to the file
+     *
+     * @param path The file's path to be created
+     * @throws T3dException
+     * @throws IOException
+     */
+    public void writeShapeFile(String path) throws T3dException, IOException {
+        // check for correct execution order
         if (!this.dataAvailable) {
             throw new T3dException("There is no data available to write the shape file!");
         }
-        File newFile = new File(filename);
+        // create ne File object, open dataStore
+        File newFile = new File(path);
         ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
         Map<String, Serializable> params = new HashMap<>();
+        // optional: add url and create spaital index
         params.put("url", newFile.toURI().toURL());
         params.put("create spatial index", Boolean.TRUE);
         ShapefileDataStore newDataStore = (ShapefileDataStore) dataStoreFactory.createNewDataStore(params);
@@ -107,6 +218,7 @@ public class IoShapeWriter extends IoAbstractWriter {
         String typeName = newDataStore.getTypeNames()[0];
         SimpleFeatureSource featureSource = newDataStore.getFeatureSource(typeName);
 
+        // try to write all Feautres via transaction -> rollback on failure possible (database like)
         Transaction transaction = new DefaultTransaction("create");
         if (featureSource instanceof SimpleFeatureStore) {
             // wrap list of features in SimpleFeatureCollection
@@ -123,76 +235,6 @@ public class IoShapeWriter extends IoAbstractWriter {
             }
         } else {
             throw new T3dException(typeName + " does not support read/write access");
-        }
-    }
-
-    public void createPolygonZFeatures(GmSimpleTINFeature tin) throws T3dException {
-        if (!this.built) {
-            throw new T3dException("You need to build the shapes feature type before adding data to it!");
-        }
-        GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
-
-        GeometryBuilder gb = new GeometryBuilder();
-        for (int i = 0; i < geom.numberOfTriangles(); i++) {
-            int[] triIdx = geom.getTriangleVertexIndices(i);
-
-            double[] points = new double[(triIdx.length + 1) * 3];
-            int l = triIdx.length;
-            for (int j = 0; j < points.length; j += 3) {   // 3 = idx of x, y, z in points[]
-                points[j] = geom.getPoint(triIdx[(j / 3) % l]).getX();
-                points[j + 1] = geom.getPoint(triIdx[(j / 3) % l]).getY();
-                points[j + 2] = geom.getPoint(triIdx[(j / 3) % l]).getZ();
-            }
-
-            Polygon poly = gb.polygonZ(points);
-            MultiPolygon mPoly = gb.multiPolygon(new Polygon[]{poly});
-
-            this.sfBuilder.add(mPoly);  // add geometry at first!
-            // here: add polygon attributes -> sfBuilder.add(xxx);
-            // --> 
-            if (attributes != null) {
-                for (ShapeFileAttribute attribute : attributes) {
-                    attribute.calcAttributes(sfBuilder, points);
-                }
-            }
-            // <--
-            SimpleFeature feature = sfBuilder.buildFeature(null);
-            this.features.add(feature);
-        }
-        dataAvailable = true;
-    }
-
-    public void buildFeatureType() throws T3dException {
-        if (this.initialized) {
-            this.sft = sftBuilder.buildFeatureType();
-            this.sfBuilder = new SimpleFeatureBuilder(sft);
-            this.built = true;
-        } else {
-            throw new T3dException("You need to initialize a featureType before building it!");
-        }
-    }
-
-    public void addIntegerFeatureTypeAttribute(String attributeName) throws T3dException {
-        if (this.initialized) {
-            this.sftBuilder.add(attributeName, Integer.class);
-        } else {
-            throw new T3dException("You need to initialize a featureType before adding attributes!");
-        }
-    }
-
-    public void addDoubleFeatureTypeAttribute(String attributeName) throws T3dException {
-        if (this.initialized) {
-            this.sftBuilder.add(attributeName, Double.class);
-        } else {
-            throw new T3dException("You need to initialize a featureType before adding attributes!");
-        }
-    }
-
-    public void addStringFeatureTypeAttribute(String attributeName) throws T3dException {
-        if (this.initialized) {
-            this.sftBuilder.length(32).add(attributeName, String.class);
-        } else {
-            throw new T3dException("You need to initialize a featureType before adding attributes!");
         }
     }
 
