@@ -33,44 +33,49 @@
 package org.n52.v3d.triturus.geologic.examples;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import org.n52.v3d.triturus.core.IoFormatType;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.exporters.IoShapeWriter;
-import org.n52.v3d.triturus.geologic.exporters.IoSurfaceWriter;
-import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
-import org.n52.v3d.triturus.geologic.exporters.util.ClarNotationShapeFileAttribute;
-import org.n52.v3d.triturus.geologic.exporters.util.ShapeFileAttribute;
-import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
+import org.n52.v3d.triturus.geologic.util.CRSRecommender;
+import org.n52.v3d.triturus.gisimplm.GmPoint;
+import org.n52.v3d.triturus.gisimplm.GmSimpleElevationGrid;
+import org.n52.v3d.triturus.vgis.VgPoint;
 import org.opengis.referencing.FactoryException;
 
 /**
  * @author Moritz Wollenhaupt <moritz.wollenhaupt@hs-bochum.de>
  */
-public class GocadTSurfClarNotationToShp {
+public class ElevationGridToShp {
 
-    private final String inFilename = "res/s_geologie_Rotliegend_ts.ts";
-    private final String outFilename = "res/s_geologie_Rotliegend_ts.shp";
+    private final String outFilename = "grid.shp";
 
     public static void main(String args[]) {
-        new GocadTSurfClarNotationToShp().run();
+        new ElevationGridToShp().run();
     }
 
     public void run() {
         try {
-            // Read first TSurf model from GOCAD data file...
-            IoGocadTSurfReader reader = new IoGocadTSurfReader();
-            GmSimpleTINFeature surf = reader.read(inFilename).get(0);
-            // ... and generate Shape output:
-            IoShapeWriter shpWriter = new IoShapeWriter();
-            ClarNotationShapeFileAttribute clarNotationAttribute = new ClarNotationShapeFileAttribute(true, true, true, true);
-            List<ShapeFileAttribute> attributes = new ArrayList<>();
-            attributes.add(clarNotationAttribute);
-            shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, "23033", attributes);
-            shpWriter.buildFeatureType();                           
-            shpWriter.createPolygonZFeatures(surf);
+
+            // generate grid data
+            VgPoint orig = new GmPoint(3546713.29, 5602695.25, 0);
+            GmSimpleElevationGrid grid = new GmSimpleElevationGrid(100, 100, orig, 100., 100.);
+            for (int j = 0; j < grid.numberOfColumns(); j++) {
+                for (int i = 0; i < grid.numberOfRows(); i++) {
+                    grid.setValue(i, j, 100. + 10. * Math.random() - 5. * (Math.abs(i - 5) + Math.abs(j - 5)));
+                }
+            }
+            // initialize ShapeWriter with geom type you want to write, e.g. tin or elevation grid
+            IoShapeWriter shpWriter = new IoShapeWriter(IoShapeWriter.ELEVATION_GRID);
+            // init internal featuretypes (you want to write multi polygons in a CRS given by it's EPSG code)
+            // optionial you can give attribute types you want to store in the shapefile's geometry
+            shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, CRSRecommender.recommendEPSG(grid.envelope()), null);
+            // optional: here init attribute types (not shown) -> see GocadTSurfClarNotationToShp example to see how to handle attributes
+            // ...
+            // ...
+            
+            // after all configuration: build your feature type, write the geometries and store them into a shapefile
+            shpWriter.buildFeatureType();
+            shpWriter.writeGeometry(grid);
             shpWriter.writeShapeFile(outFilename);
 
             System.out.println("Wrote the file \"" + outFilename + "\".");

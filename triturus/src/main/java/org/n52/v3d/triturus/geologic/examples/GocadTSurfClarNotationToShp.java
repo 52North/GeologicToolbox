@@ -43,6 +43,7 @@ import org.n52.v3d.triturus.geologic.exporters.IoSurfaceWriter;
 import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
 import org.n52.v3d.triturus.geologic.exporters.util.ClarNotationShapeFileAttribute;
 import org.n52.v3d.triturus.geologic.exporters.util.ShapeFileAttribute;
+import org.n52.v3d.triturus.geologic.util.CRSRecommender;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.opengis.referencing.FactoryException;
 
@@ -64,13 +65,34 @@ public class GocadTSurfClarNotationToShp {
             IoGocadTSurfReader reader = new IoGocadTSurfReader();
             GmSimpleTINFeature surf = reader.read(inFilename).get(0);
             // ... and generate Shape output:
-            IoShapeWriter shpWriter = new IoShapeWriter();
+            // initialize ShapeWriter with geom type you want to write, e.g. tin or elevation grid
+            IoShapeWriter shpWriter = new IoShapeWriter(IoShapeWriter.TIN);
+
+            /*
+            The following section is optional and is required for attributing geometries:
+                The process shall be described by calculating clarnotation values (dt. Clarwerte) for a TIN
+            
+            1. All Shapefile attributes must be initialized, e.g. ClarNotationShapeFileAttributes (see also implementation class)
+            2. Several attributes are possible. These are to be collected in a list of ShapeFileAttribute's and transferred together. 
+             */
             ClarNotationShapeFileAttribute clarNotationAttribute = new ClarNotationShapeFileAttribute(true, true, true, true);
             List<ShapeFileAttribute> attributes = new ArrayList<>();
             attributes.add(clarNotationAttribute);
-            shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, "23033", attributes);
-            shpWriter.buildFeatureType();                           
-            shpWriter.createPolygonZFeatures(surf);
+
+            /* After initializing your Attributes, you have to init the GeoTool's 
+                FeatureType you want to work with
+               Here: You want to store some polygonal geometries (MULTI_POLYGON) 
+                in a CRS given by it's EPSG code with the initialized list of attributes
+               Note that the CRS recommendation only works for the federal state 
+                of Hessen in the coordinate system UTM and GK Zone 3. Otherwise, a string must be transferred manually
+             */
+            shpWriter.initFeatureType(IoShapeWriter.MULTI_POLYGON, CRSRecommender.recommendEPSG(surf.envelope()), attributes);
+            // At this point all configuration is done. You have to build up your configured FeatureType
+            shpWriter.buildFeatureType();
+            // Write/Transform your geometry into Geotool's SimpleFeatures
+            // In this step, the calculation of attributes is performed for each geometry object
+            shpWriter.writeGeometry(surf);
+            // Finally store your data into a new shapefile. Do not forget the .shp file extension
             shpWriter.writeShapeFile(outFilename);
 
             System.out.println("Wrote the file \"" + outFilename + "\".");
