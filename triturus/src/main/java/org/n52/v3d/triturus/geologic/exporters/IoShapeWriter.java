@@ -24,9 +24,11 @@ import org.locationtech.jts.geom.Polygon;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.exporters.util.ShapeFileAttribute;
+import org.n52.v3d.triturus.gisimplm.GmSimpleElevationGrid;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINGeometry;
 import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;
+import org.n52.v3d.triturus.vgis.VgFeature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
@@ -40,6 +42,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class IoShapeWriter extends IoAbstractWriter {
 
+    public static final int TIN = 1;
+    public static final int ELEVATION_GRID = 2;
+
+    private int type;
     private final String logString;
     // booleans used for execution in correct order
     private boolean initialized = false;
@@ -58,8 +64,9 @@ public class IoShapeWriter extends IoAbstractWriter {
     public static final String MULTI_LINE_STRING = "MultiLineString";
     public static final String MULTI_POLYGON = "MultiPolygon";
 
-    public IoShapeWriter() {
+    public IoShapeWriter(int type) {
         logString = this.getClass().getName();
+        this.type = type;
         this.features = new ArrayList<>();
     }
 
@@ -142,6 +149,33 @@ public class IoShapeWriter extends IoAbstractWriter {
     }
 
     /**
+     * Third step for writing a shape file. In this case a VgFeature, matching
+     * the given type is written to a shape file. You have to write your own
+     * method in this way, if you want to store other geometries
+     *
+     * @param feature The Feature, e.g. a TIN instance you want to write into
+     * the shape file
+     * @throws T3dException
+     */
+    public void writeGeometry(VgFeature feature) {
+        // check correct execution order
+        if (!this.built) {
+            throw new T3dException("You need to build the shapes feature type before adding data to it!");
+        }
+        
+        switch (type) {
+            case TIN:
+                writeTIN((GmSimpleTINFeature) feature);
+                break;
+            case ELEVATION_GRID:
+                break;
+            default:
+                throw new T3dException("No valid feature type");
+        }
+
+    }
+
+    /**
      * Third step for writing a shape file. In this case a tin is written to a
      * shape file. You have to write your own method in this way, if you want to
      * store other geometries
@@ -149,11 +183,7 @@ public class IoShapeWriter extends IoAbstractWriter {
      * @param tin The Tin instance you want to write into the shape file
      * @throws T3dException
      */
-    public void createPolygonZFeatures(GmSimpleTINFeature tin) throws T3dException {
-        // check correct execution order
-        if (!this.built) {
-            throw new T3dException("You need to build the shapes feature type before adding data to it!");
-        }
+    private void writeTIN(GmSimpleTINFeature tin) {
         // Cast object for access of points/triangles
         GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
 
