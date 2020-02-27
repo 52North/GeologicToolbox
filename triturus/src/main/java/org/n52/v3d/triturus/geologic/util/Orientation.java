@@ -47,6 +47,10 @@ import org.n52.v3d.triturus.vgis.VgTriangle;
  */
 public class Orientation 
 {
+        public static final int DEGREE = 0;
+        public static final int GRAD = 1;
+        public static final int RAD = 2;
+        
 	private T3dVector dir; 
 	
 	static public double 

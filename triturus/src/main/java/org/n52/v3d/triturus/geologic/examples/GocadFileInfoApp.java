@@ -46,10 +46,7 @@ import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
  */
 public class GocadFileInfoApp
 {
-	private String
-		inFilename = "/projects/GeologicToolbox/data/simple_test.ts";
-//		inFilename = "/projects/GeologicToolbox/data/Tiefbrunnen_II.wl";
-	
+	private String inFilename = "/projects/GeologicToolbox/data/simple_test.ts";
 	
 	public static void main(String args[]) {
 		new GocadFileInfoApp().run(args);
