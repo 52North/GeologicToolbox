@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2018 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2020 52North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,52 +26,50 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial 
- * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, 
- * Germany, info@52north.org
+ * Contact: Benno Schmidt, 52 North Initiative for Geospatial Open Source 
+ * Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, Germany, 
+ * b.schmidt@52north.org
  */
 package org.n52.v3d.triturus.geologic.examples;
 
-import java.util.List;
-
 import org.n52.v3d.triturus.core.T3dException;
-import org.n52.v3d.triturus.geologic.importers.GocadDataInfo;
-import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
+import org.n52.v3d.triturus.geologic.analysis.FltTINCorrelation;
+import org.n52.v3d.triturus.geologic.util.Orientation;
+import org.n52.v3d.triturus.gisimplm.GmPoint;
+import org.n52.v3d.triturus.gisimplm.GmTriangle;
+import org.n52.v3d.triturus.vgis.VgGeomObject;
+import org.n52.v3d.triturus.vgis.VgPoint;
+import org.n52.v3d.triturus.vgis.VgTriangle;
 
-/**
- * Geologic Toolbox example application: Reads a GOCAD ASCII file and dumps 
- * a summary about the file contents.
- * 
- * @author Benno Schmidt
- */
-public class GocadFileInfoApp
+public class UITest
 {
-	private String
-		inFilename = "/projects/GeologicToolbox/data/simple_test.ts";
-//		inFilename = "/projects/GeologicToolbox/data/Tiefbrunnen_II.wl";
-	
-	
 	public static void main(String args[]) {
-		new GocadFileInfoApp().run(args);
+		new UITest().run(args);
 	}
 	
 	public void run(String[] args) 
 	{ 
-		if (args.length > 0) 
-			inFilename = args[1];
-		List<GocadDataInfo> info = null;
-
 		try {
-			info = new IoGocadTSurfReader().getInfo(inFilename);	        
-        }
+			FltTINCorrelation t = new FltTINCorrelation();
+
+			System.out.println("Moving window size: ");
+			for (String entry : t.UIDialog_MovingWindowSizeOptions())
+				System.out.println(" " + entry);
+
+			System.out.println("Rasterization width: ");
+			for (String entry : t.UIDialog_CellSizeOptions())
+				System.out.println(" " + entry);
+
+			System.out.println("z-Conflict handler: ");
+			for (String entry : t.UIDialog_ZConflictOptions())
+				System.out.println(" " + entry);
+
+			System.out.println("File output format: ");
+			for (String entry : t.UIDialog_OutputFormatOptions())
+				System.out.println(" " + entry);			
+		}
 		catch (T3dException e) {
 			e.printStackTrace();
-		}
-		
-		if (info != null) {
-			for (GocadDataInfo i : info) {
-				System.out.println(i);
-			}
 		}
 	}
 }
