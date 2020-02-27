@@ -79,9 +79,10 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  * </li>
  * </ul>
  * <br/>
- * TODO: Rückgabe von Fehlern an aufrufende Anwendung vereinbaren
+ * TODO: RÃ¼ckgabe von Fehlern an aufrufende Anwendung vereinbaren
  * TODO: Decodierung Umlaute aus CSV-Dateien
  * TODO: Marker namens "Surface" mit Gornud-Level (loc.z) vergleichen
+ * TODO: v_ -> virtual well
  * 
  * @author Benno Schmidt
  */

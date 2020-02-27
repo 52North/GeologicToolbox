@@ -56,9 +56,12 @@ public class ClarNotation
 	{ 
 		try {
 			VgPoint 
-				p1 = new GmPoint(420000., 5800000., 100.),
-				p2 = new GmPoint(420100., 5800000., 100.),
-				p3 = new GmPoint(420000., 5800100., 90.);
+//				p1 = new GmPoint(420000., 5800000., 100.),
+//				p2 = new GmPoint(420100., 5800000., 100.),
+//				p3 = new GmPoint(420000., 5800100., 90.);
+			p1 = new GmPoint(0., 2., 0.),
+						p2 = new GmPoint(2., 0., 0.),
+			p3 = new GmPoint(0., 0., 0.817);
 			VgTriangle tri = new GmTriangle(p1, p2, p3);
 			tri.setSRS(VgGeomObject.SRSNone);
 
@@ -67,7 +70,7 @@ public class ClarNotation
 			if (orient.hasZeroArea()) 
 				System.out.println("Area is 0.");
 			if (orient.isPlain()) 
-				System.out.println("Triangle plain in x-y-plane.");
+				System.out.println("Triangle plain in x-y plane.");
 			
 			System.out.println(
 					"dip: " + orient.dipInt() + " (" + orient.dip() + ")");

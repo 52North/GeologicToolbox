@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2018 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2020 52 North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,49 +26,43 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial 
- * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, 
- * Germany, info@52north.org
+ * Contact: Benno Schmidt, 52 North Initiative for Geospatial Open Source 
+ * Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, Germany, 
+ * info@52north.org
  */
-package org.n52.v3d.triturus.geologic.examples;
+package org.n52.v3d.triturus.geologic.data;
 
-import java.util.List;
+import org.n52.v3d.triturus.gisimplm.GmAttrFeature;
+import org.n52.v3d.triturus.vgis.VgPoint;
 
-import org.n52.v3d.triturus.core.T3dException;
-import org.n52.v3d.triturus.geologic.importers.GocadDataInfo;
-import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
-
-/**
- * Geologic Toolbox example application: Reads a GOCAD ASCII file and dumps 
- * a summary about the file contents.
- * 
- * @author Benno Schmidt
- */
-public class GocadFileInfoApp
+public class WellFeature extends GmAttrFeature
 {
-	private String inFilename = "/projects/GeologicToolbox/data/simple_test.ts";
-	
-	public static void main(String args[]) {
-		new GocadFileInfoApp().run(args);
+	public WellFeature(String wellName) {
+		this.addAttribute("NAME", "java.lang.String");
+		this.setAttributeValue("NAME", wellName);
+		//markers.arr.clear();
 	}
-	
-	public void run(String[] args) 
-	{ 
-		if (args.length > 0) 
-			inFilename = args[1];
-		List<GocadDataInfo> info = null;
 
-		try {
-			info = new IoGocadTSurfReader().getInfo(inFilename);	        
-        }
-		catch (T3dException e) {
-			e.printStackTrace();
-		}
-		
-		if (info != null) {
-			for (GocadDataInfo i : info) {
-				System.out.println(i);
-			}
-		}
+	public void setPosition(VgPoint pos) {
+		this.setGeometry(pos);
 	}
+
+    public void setBlubb() {	// TODO
+/*		if (this.hasAttribute("position")) {
+			this.setAttributeValue("position", pos);
+		} else {
+			this.addAttribute("position", "org.n52.v3d.triturus.vgis.VgPoint");
+			this.setAttributeValue("position", pos);
+		}*/
+    }
+    
+	
+	/*
+	if (this.hasAttribute("position")) {
+		this.setAttributeValue("position", pos);
+	} else {
+		this.addAttribute("position", "org.n52.v3d.triturus.vgis.VgPoint");
+		this.setAttributeValue("position", pos);
+	}*/
+
 }

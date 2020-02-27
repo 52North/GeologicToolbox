@@ -135,12 +135,11 @@ public class IoSurfaceWriter extends IoAbstractWriter
             }
         }
         catch (T3dException e) {
-            e.printStackTrace();
+            throw e;
         }
     }
     
     private void writeVTKPolydata(GmSimpleTINFeature tin, String filename) 
-    
     	throws T3dException
     {
         try {

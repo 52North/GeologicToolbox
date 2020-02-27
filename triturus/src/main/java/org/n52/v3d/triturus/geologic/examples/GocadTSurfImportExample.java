@@ -18,56 +18,55 @@
  *
  * Therefore the distribution of the program linked with libraries licensed
  * under the aforementioned licenses, is permitted by the copyright holders
- * if the distribution is compliant with both the GNU General Public License
+ * if the distribution is compliant with both the GNU General Public License 
  * version 2 and the aforementioned licenses.
  *
  * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial
- * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster,
+ * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial 
+ * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, 
  * Germany, info@52north.org
  */
 package org.n52.v3d.triturus.geologic.examples;
 
-import java.util.List;
 import org.n52.v3d.triturus.core.IoFormatType;
 import org.n52.v3d.triturus.core.T3dException;
-import org.n52.v3d.triturus.geologic.exporters.IoSurfaceWriter;
 import org.n52.v3d.triturus.geologic.importers.IoGocadTSurfReader;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
+import org.n52.v3d.triturus.gisimplm.IoTINWriter;
 
 /**
- * Geologic Toolbox example application: Reads a GOCAD TSurf TIN and writes it
- * to an HTML5 page with an interactive 3D scene in it.
- *
+ * Geologic Toolbox example application: Reads a GOCAD TSurf TIN and writes 
+ * it to an HTML5 page with an interactive 3D scene in it.
+ * 
  * @author Benno Schmidt
  */
-public class GocadTSurfImportExample {
+public class GocadTSurfImportExample
+{
+	private final String
+		inFilename = "/projects/GeologicToolbox/data/simple_test.ts",
+		outFilename = "/projects/GeologicToolbox/data/simple_test.html"; 
 
-    private final String inFilename = "res/s_geologie_Rotliegend_ts.ts";
-    private final String outFilename = "res/s_geologie_Rotliegend_ts.shp";
-
-
-    public static void main(String args[]) {
-        new GocadTSurfImportExample().run();
-    }
-
-    public void run() {
-        try {
-            // Read first TSurf model from GOCAD data file...
-            IoGocadTSurfReader reader = new IoGocadTSurfReader();
-            List<GmSimpleTINFeature> a = reader.read(inFilename);
-            System.out.println(a.get(0).getName());
-//            GmSimpleTINFeature surf = reader.read(inFilename).get(0);
-            // ... and generate Shape output:
-//            IoSurfaceWriter writer = new IoSurfaceWriter(IoFormatType.SHP);
-//            writer.writeToFile(surf, outFilename);
-//            System.out.println("Wrote the file \"" + outFilename + "\".");
-        } catch (T3dException e) {
-            e.printStackTrace();
-        }
-    }
+	public static void main(String args[]) {
+		new GocadTSurfImportExample().run();
+	}
+	
+	public void run() 
+	{ 
+		try {
+			// Read first TSurf model from GOCAD data file...
+			IoGocadTSurfReader reader = new IoGocadTSurfReader();
+			GmSimpleTINFeature surf = reader.read(inFilename).get(0);
+			// ... and generate HTML5/X3DOM output:
+			IoTINWriter writer = new IoTINWriter(IoFormatType.X3DOM);
+			writer.writeToFile(surf, outFilename);
+			System.out.println("Wrote the file \"" + outFilename + "\".");
+		}
+		catch (T3dException e) {
+			e.printStackTrace();
+		}
+	}
 }
