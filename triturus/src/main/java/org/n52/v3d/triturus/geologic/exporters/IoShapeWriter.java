@@ -24,9 +24,12 @@ import org.locationtech.jts.geom.Polygon;
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.exporters.util.ShapeFileAttribute;
+import org.n52.v3d.triturus.gisimplm.GmSimpleElevationGrid;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 import org.n52.v3d.triturus.gisimplm.GmSimpleTINGeometry;
 import org.n52.v3d.triturus.gisimplm.IoAbstractWriter;
+import org.n52.v3d.triturus.vgis.VgFeature;
+import org.n52.v3d.triturus.vgis.VgPoint;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
@@ -40,6 +43,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class IoShapeWriter extends IoAbstractWriter {
 
+    public static final int TIN = 1;
+    public static final int ELEVATION_GRID = 2;
+
+    private int type;
     private final String logString;
     // booleans used for execution in correct order
     private boolean initialized = false;
@@ -58,8 +65,9 @@ public class IoShapeWriter extends IoAbstractWriter {
     public static final String MULTI_LINE_STRING = "MultiLineString";
     public static final String MULTI_POLYGON = "MultiPolygon";
 
-    public IoShapeWriter() {
+    public IoShapeWriter(int type) {
         logString = this.getClass().getName();
+        this.type = type;
         this.features = new ArrayList<>();
     }
 
@@ -142,6 +150,37 @@ public class IoShapeWriter extends IoAbstractWriter {
     }
 
     /**
+     * Third step for writing a shape file. In this case a VgFeature, matching
+     * the given type is written to a shape file. You have to write your own
+     * method in this way, if you want to store other geometries
+     *
+     * @param feature The Feature, e.g. a TIN instance you want to write into
+     * the shape file
+     * @throws T3dException
+     */
+    public void writeGeometry(VgFeature feature) {
+        // check correct execution order
+        if (!this.built) {
+            throw new T3dException("You need to build the shapes feature type before adding data to it!");
+        }
+
+        switch (type) {
+            case TIN:
+                writeTIN((GmSimpleTINFeature) feature);
+                dataAvailable = true;
+                break;
+            case ELEVATION_GRID:
+                writeElevationGrid((GmSimpleElevationGrid) feature);
+                dataAvailable = true;
+                break;
+            default:
+                throw new T3dException("No valid feature type");
+        }
+        
+
+    }
+
+    /**
      * Third step for writing a shape file. In this case a tin is written to a
      * shape file. You have to write your own method in this way, if you want to
      * store other geometries
@@ -149,11 +188,7 @@ public class IoShapeWriter extends IoAbstractWriter {
      * @param tin The Tin instance you want to write into the shape file
      * @throws T3dException
      */
-    public void createPolygonZFeatures(GmSimpleTINFeature tin) throws T3dException {
-        // check correct execution order
-        if (!this.built) {
-            throw new T3dException("You need to build the shapes feature type before adding data to it!");
-        }
+    private void writeTIN(GmSimpleTINFeature tin) {
         // Cast object for access of points/triangles
         GmSimpleTINGeometry geom = (GmSimpleTINGeometry) tin.getGeometry();
 
@@ -190,7 +225,54 @@ public class IoShapeWriter extends IoAbstractWriter {
             SimpleFeature feature = sfBuilder.buildFeature(null);
             this.features.add(feature);
         }
-        dataAvailable = true;
+        
+    }
+
+    private void writeElevationGrid(GmSimpleElevationGrid grid) {
+        // GeoTool's GeometryBuilder builds geometries for you by giving them coordinates
+        GeometryBuilder gb = new GeometryBuilder();
+        // Iterate grid's vertices
+        for (int i = 0; i < grid.numberOfRows() - 1; i++) {
+            for (int j = 0; j < grid.numberOfColumns() - 1; j++) {
+                VgPoint p1 = grid.getPoint(i, j);
+                VgPoint p2 = grid.getPoint(i, j + 1);
+                VgPoint p3 = grid.getPoint(i + 1, j + 1);
+                VgPoint p4 = grid.getPoint(i + 1, j);
+
+                double[] coords = new double[12];
+                coords[0] = p1.getX();
+                coords[1] = p1.getY();
+                coords[2] = p1.getZ();
+                coords[3] = p2.getX();
+                coords[4] = p2.getY();
+                coords[5] = p2.getZ();
+                coords[6] = p3.getX();
+                coords[7] = p3.getY();
+                coords[8] = p3.getZ();
+                coords[9] = p4.getX();
+                coords[10] = p4.getY();
+                coords[11] = p4.getZ();
+
+                // create a new polygon -> you have to wrap it in an multiPolygon, otherwise you won't get a threedimensional geometry representation
+                // a shape file only knows the data type MultiPolygon
+                Polygon poly = gb.polygonZ(coords);
+                MultiPolygon mPoly = gb.multiPolygon(new Polygon[]{poly});
+
+                this.sfBuilder.add(mPoly);  // add geometry at first!
+                // now all shape file attributes will be calculated. 
+                // it is important to store them in the same order than the shape file's table columns were created!
+                if (attributes != null) {
+                    for (ShapeFileAttribute attribute : attributes) {
+                        attribute.calcAttributes(sfBuilder, coords);
+                    }
+                }
+                // finally build your feature and add it to the feature collection you want to write 
+                SimpleFeature feature = sfBuilder.buildFeature(null);
+                this.features.add(feature);
+
+            }
+        }
+
     }
 
     /**
