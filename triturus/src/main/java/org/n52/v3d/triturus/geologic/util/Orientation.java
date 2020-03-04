@@ -32,6 +32,7 @@
  */
 package org.n52.v3d.triturus.geologic.util;
 
+import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.t3dutil.T3dVector;
 import org.n52.v3d.triturus.vgis.T3dSRSException;
 import org.n52.v3d.triturus.vgis.VgPoint;
@@ -42,14 +43,18 @@ import org.n52.v3d.triturus.vgis.VgTriangle;
  * This class also provides Clar's notation as often used by geologists. 
  * Moreover <tt>Orientation</tt> objects might be of help carrying out 
  * exposition or inclination analysis tasks. 
+ * <br/>
+ * Note: Triangle vertex ordering will is not considered. It will be assumed 
+ * that the triangle always runs downhill and the triangle normal is heading
+ * upwards, i.e. the dip value will always be in the range 0...90 degrees. 
  * 
  * @author Benno Schmidt
  */
 public class Orientation 
 {
-        public static final int DEGREE = 0;
-        public static final int GRAD = 1;
-        public static final int RAD = 2;
+    public static final int DEGREE = 0;
+    public static final int GRAD = 1;
+    public static final int RAD = 2;
         
 	private T3dVector dir; 
 	
@@ -85,7 +90,11 @@ public class Orientation
 					v2.getX() - v0.getX(),
 					v2.getY() - v0.getY(),
 					v2.getZ() - v0.getZ());			
-		return crossProduct(dir1, dir2);
+		T3dVector x = crossProduct(dir1, dir2);
+		if (x.getZ() < 0.) {
+			x.setX(-x.getX()); x.setY(-x.getY()); x.setZ(-x.getZ()); 
+		}
+		return x;
 	}
 
 	/**
@@ -174,7 +183,11 @@ public class Orientation
 			return Math.PI / 2.;
 		
 		T3dVector horiz = new T3dVector(dir.getX(), dir.getY(), 0.); 
-		return new T3dVector(0., 0., 0.).angle(dir, horiz); 
+		double dip = new T3dVector(0., 0., 0.).angle(dir, horiz); 
+		if (dip < 0. || dip > Math.PI / 2.) {
+			throw new T3dException("numerical dip computation error"); 
+		}
+		return dip;
 	}
 	
 	/**

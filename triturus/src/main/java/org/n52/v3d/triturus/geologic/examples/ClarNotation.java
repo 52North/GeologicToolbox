@@ -36,6 +36,7 @@ import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.geologic.util.Orientation;
 import org.n52.v3d.triturus.gisimplm.GmPoint;
 import org.n52.v3d.triturus.gisimplm.GmTriangle;
+import org.n52.v3d.triturus.t3dutil.T3dVector;
 import org.n52.v3d.triturus.vgis.VgGeomObject;
 import org.n52.v3d.triturus.vgis.VgPoint;
 import org.n52.v3d.triturus.vgis.VgTriangle;
@@ -49,19 +50,17 @@ import org.n52.v3d.triturus.vgis.VgTriangle;
 public class ClarNotation
 {
 	public static void main(String args[]) {
-		new ClarNotation().run(args);
+		new ClarNotation().run();
+		new ClarNotation().run2();
 	}
 	
-	public void run(String[] args) 
+	public void run() 
 	{ 
 		try {
 			VgPoint 
-//				p1 = new GmPoint(420000., 5800000., 100.),
-//				p2 = new GmPoint(420100., 5800000., 100.),
-//				p3 = new GmPoint(420000., 5800100., 90.);
-			p1 = new GmPoint(0., 2., 0.),
-						p2 = new GmPoint(2., 0., 0.),
-			p3 = new GmPoint(0., 0., 0.817);
+				p1 = new GmPoint(420000., 5800000., 100.),
+				p2 = new GmPoint(420100., 5800000., 100.),
+				p3 = new GmPoint(420000., 5800100., 90.);
 			VgTriangle tri = new GmTriangle(p1, p2, p3);
 			tri.setSRS(VgGeomObject.SRSNone);
 
@@ -73,13 +72,49 @@ public class ClarNotation
 				System.out.println("Triangle plain in x-y plane.");
 			
 			System.out.println(
-					"dip: " + orient.dipInt() + " (" + orient.dip() + ")");
+				"dip: " + orient.dipInt() + " (" + orient.dip() + ")");
 			System.out.println(
-					"azimuth: " + orient.azimuthInt() + " (" + orient.azimuth() + ")");
+				"azimuth: " + orient.azimuthInt() + " (" + orient.azimuth() + ")");
 			System.out.println(
-					"Clar: " + orient.clarNotation());
+				"Clar: " + orient.clarNotation());
 			System.out.println(
-					"Compass direction: " + orient.compassDirection());
+				"Compass direction: " + orient.compassDirection());
+		}
+		catch (T3dException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void run2() 
+	{ 
+		final int N = 35; 
+		final double maxPhi = 2.*Math.PI;
+		final double z0 = 100., z = 150.;
+				
+		System.out.println();
+		
+		try {
+			VgPoint p0 = new GmPoint(420000., 5800000., z0);
+			VgPoint p1, p2;
+
+			double incr = maxPhi/N;
+			for (double phi = 0; phi < maxPhi; phi += incr) {
+				double newPhi = phi + incr;
+				p1 = new GmPoint(
+					p0.getX() + 1000. * Math.sin(phi),
+					p0.getY() + 1000. * Math.cos(phi),
+					z);
+				p2 = new GmPoint(
+					p0.getX() + 1000. * Math.sin(newPhi),
+					p0.getY() + 1000. * Math.cos(newPhi),
+					z);
+
+				VgTriangle tri = new GmTriangle(p0, p2, p1);
+				tri.setSRS(VgGeomObject.SRSNone);
+				Orientation orient = new Orientation(tri); 
+				System.out.println(
+					orient.clarNotation() + " (" + orient.compassDirection() + ")");
+			}
 		}
 		catch (T3dException e) {
 			e.printStackTrace();
