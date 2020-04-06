@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2019-2020 52North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt, 52 North Initiative for Geospatial Open Source 
+ * Contact: Benno Schmidt, 52North Initiative for Geospatial Open Source 
  * Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, Germany, 
  * b.schmidt@52north.org
  */
@@ -39,14 +39,14 @@ import org.n52.v3d.triturus.vgis.VgPoint;
 import org.n52.v3d.triturus.vgis.VgTriangle;
 
 /**
- * Orientation objects provide azimuth and dip information about triangles. 
+ * Orientation objects provide strike and dip information about triangles. 
  * This class also provides Clar's notation as often used by geologists. 
  * Moreover <tt>Orientation</tt> objects might be of help carrying out 
  * exposition or inclination analysis tasks. 
  * <br/>
  * Note: Triangle vertex ordering will is not considered. It will be assumed 
  * that the triangle always runs downhill and the triangle normal is heading
- * upwards, i.e. the dip value will always be in the range 0...90 degrees. 
+ * upwards, i.e. the dip value will always be in the range 0 ... 90 degrees. 
  * 
  * @author Benno Schmidt
  */
@@ -56,11 +56,13 @@ public class Orientation
     public static final int GRAD = 1;
     public static final int RAD = 2;
         
-	private T3dVector dir; 
+	private T3dVector dir; // face normal heading upwards
 	
 	static public double 
 		rad2degr = 180./Math.PI,
 		rad2gon = 200./Math.PI;
+	
+	private boolean hasZeroArea, isHorizontal, isVertical;
 	
 	/**
 	 * constructs an orientation object. For triangle coordinates referring to
@@ -73,6 +75,10 @@ public class Orientation
 		if (tri.hasGeographicSRS())
 			throw new T3dSRSException("Orientation object construction failed.");
 		this.dir = Orientation.direction(tri);
+		
+		this.hasZeroArea = this.hasZeroArea();
+		this.isHorizontal = this.isHorizontal();
+		this.isVertical = this.isVertical();
 	}
 
 	static private T3dVector direction(VgTriangle tri) {
@@ -112,14 +118,21 @@ public class Orientation
 	
 	/**
 	 * checks whether the triangle that has been given in the constructor is 
-	 * plain with respect to the xy-plane (horizontal triangle). Note that this
+	 * plain with respect to the x-y plane (horizontal triangle). Note that this
 	 * case also occurs if <tt>this.hasZeroArea()</tt> here.
 	 * 
 	 * @return <i>true</i> for horizontal orientation
 	 * @see {@link #hasZeroArea()}
 	 */
-	public boolean isPlain() {
+	public boolean isHorizontal() {
 		return dir.getX() == 0. && dir.getY() == 0.; 
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public boolean isPlain() {
+		return this.isHorizontal();
 	}
 
 	/**
@@ -137,17 +150,17 @@ public class Orientation
 	static private T3dVector crossProduct(T3dVector v1, T3dVector v2)
 	{
 		return new T3dVector(
-				v1.getY() * v2.getZ() - v1.getZ() * v2.getY(),
-				v1.getZ() * v2.getX() - v1.getX() * v2.getZ(),
-				v1.getX() * v2.getY() - v1.getY() * v2.getX());
+			v1.getY() * v2.getZ() - v1.getZ() * v2.getY(),
+			v1.getZ() * v2.getX() - v1.getX() * v2.getZ(),
+			v1.getX() * v2.getY() - v1.getY() * v2.getX());
 	}
 	
 	/**
 	 * calculates the dip value (inclination) for the triangle given in 
 	 * the constructor. The result is given in degrees, i.e. in the range 
-	 * <i>0 ... 90</i>. For a horizontal triangle the result will be 0, for
-	 * a vertical triangle +90. Note that the return value will be 0 if the 
-	 * triangle's area is 0.
+	 * <i>0 <= dip <= 90</i>. For a horizontal triangle the result will be 0, 
+	 * for a vertical triangle +90. Note that the return value will be 0 if 
+	 * the triangle's area is 0.
 	 * 
 	 * @return Dip value in degrees 
 	 * @see {@link #hasZeroArea()}
@@ -160,7 +173,7 @@ public class Orientation
 
 	/**
 	 * provides the dip value given in degrees as integer in the range 
-	 * <i>0 ... 90</i>. Also see documentation for <tt>this#dip</tt>.
+	 * <i>0 <= dipInt <= 90</i>. Also see documentation for <tt>this#dip</tt>.
 	 * 
 	 * @return Dip in degrees
 	 * @see {@link #dip()}
@@ -170,8 +183,8 @@ public class Orientation
 	}
 
 	/**
-	 * provides the dip value given in radians in the range. Also see 
-	 * documentation for <tt>this#dip</tt>.
+	 * provides the dip value given in radians in the range <i>0 <= dipRad <= PI/2</i>. 
+	 * Also see documentation for <tt>this#dip</tt>.
 	 * 
 	 * @return Dip in radians
 	 * @see {@link #dip()}
@@ -180,10 +193,15 @@ public class Orientation
 		if (this.hasZeroArea()) 
 			return 0.;
 		if (this.isVertical()) 
-			return Math.PI / 2.;
+			return Math.PI/2.;
 		
-		T3dVector horiz = new T3dVector(dir.getX(), dir.getY(), 0.); 
-		double dip = new T3dVector(0., 0., 0.).angle(dir, horiz); 
+		T3dVector horiz = 
+			dir.getX() == 0. && dir.getY() == 0.
+			? new T3dVector(1., 0., 0.)
+			: new T3dVector(dir.getX(), dir.getY(), 0.); 
+		double dip = 
+			Math.PI/2. 
+			- new T3dVector(0., 0., 0.).angle(dir, horiz);
 		if (dip < 0. || dip > Math.PI / 2.) {
 			throw new T3dException("numerical dip computation error"); 
 		}
@@ -191,8 +209,8 @@ public class Orientation
 	}
 	
 	/**
-	 * provides the dip value given in gon as integer in the range 
-	 * <i>0 ... 100</i>. Also see documentation for <tt>this#dip</tt>.
+	 * provides the dip value given in gon as integer in the range <i>0 <= dipGon <= 100</i>. 
+	 * Also see documentation for <tt>this#dip</tt>.
 	 * 
 	 * @return Dip in gon
 	 * @see {@link #dip()}
@@ -202,8 +220,8 @@ public class Orientation
 	}
 	
 	/**
-	 * provides the dip value given in gon as integer in the range 
-	 * <i>0 ... 100</i>. Also see documentation for <tt>this#dip</tt>.
+	 * provides the dip value given in gon as integer in the range <i>0 <= dipGonInt <= 100</i>. 
+	 * Also see documentation for <tt>this#dip</tt>.
 	 * 
 	 * @return Dip in gon
 	 * @see {@link #dip()}
@@ -213,12 +231,13 @@ public class Orientation
 	}
 	
 	/**
-	 * calculates the azimuth value for the triangle given in the 
-	 * constructor. The result is given in degrees, i.e. in the range 
-	 * <i>0.0 <= azimuth < 360.0</i>. For a horizontal triangle the result will
-	 * be 0. Note that the return value will be 0 if the triangle's area is 0.
+	 * calculates the azimuth value (exposition or <i>dip direction</i>) for 
+	 * the triangle given in the constructor. The result is given in degrees, 
+	 * i.e. in the range <i>0.0 <= azimuth < 360.0</i>. For a horizontal or 
+	 * vertical triangle the result will be -1. Note that the return value also
+	 * will be -1, if the triangle's area is 0.
 	 * <br />
-	 * For the x-axis heading East and the y-axis heading North, the azimut is
+	 * For the x-axis heading East and the y-axis heading North, the azimuth is
 	 * given as follows:
 	 * <table>
 	 *   <th>
@@ -243,37 +262,45 @@ public class Orientation
 	 *   </tr>
 	 * </table>
 	 *    
-	 * @return Azimuth value in degrees 
+	 * @return Azimuth value in degrees, or -1 for horizontal, vertical, and zero triangles
 	 * @see {@link #isPlain()}
 	 * @see {@link #hasZeroArea()
 	 */
 	public double azimuth() {
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical) 
+			return -1.;
+
 		return this.azimuthRad() * rad2degr; 
 	}
 
 	/**
-	 * provides the azimuth value (exposition) given in degrees as 
-	 * integer in the range <i>0 ... 359</i>. Also see documentation for 
-	 * <tt>this#azimuth</tt>.
+	 * provides the azimuth value (exposition or <i>dip direction</i>) given 
+	 * in degrees as integer in the range <i>0 <= azimuthInt <= 359</i>. Also 
+	 * see documentation for <tt>this#azimuth</tt>.
 	 * 
-	 * @return Azimuth in degrees
+	 * @return Azimuth in degrees, or -1 for horizontal, vertical, and zero triangles
 	 * @see {@link #azimuth()}
 	 */
 	public int azimuthInt() {
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical) 
+			return -1;
+		
 		int res = (int) Math.round(this.azimuth()); 
 		return res >= 360 ? 0 : res;
 	}
 
 	/**
-	 * provides the azimuth value given in radians in the range. Also see 
+	 * provides the azimuth value (exposition or <i>dip direction</i>) given 
+	 * in radians in the range <i>0 <= azimuthRad <= 2*PI</i>. Also see 
 	 * documentation for <tt>this#azimuth</tt>.
 	 * 
-	 * @return Azimuth in radians
+	 * @return Azimuth in radians, or -1 for horizontal, vertical, and zero triangles
 	 * @see {@link #azimuth()}
 	 */
 	public double azimuthRad() {
-		if (this.hasZeroArea() || this.isPlain())
-			return 0.;
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical) 
+			return -1.;
+
 		if (dir.getX() == 0.)
 			return dir.getY() > 0. ? 0. : Math.PI;
 		
@@ -286,25 +313,32 @@ public class Orientation
 	}
 
 	/**
-	 * provides the azimuth value given in gon as integer in the range 
-	 * <i>0.0 <= azimuth < 400.0</i>. Also see documentation for 
-	 * <tt>this#azimuth</tt>.
+	 * provides the azimuth value (exposition or <i>dip direction</i>) given 
+	 * in gon as integer in the range <i>0.0 <= azimuth < 400.0</i>. Also see 
+	 * documentation for <tt>this#azimuth</tt>.
 	 * 
-	 * @return Azimuth in gon
+	 * @return Azimuth in gon, or -1 for horizontal, vertical, and zero triangles
 	 * @see {@link #azimuth()}
 	 */
 	public double azimuthGon() {
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical) 
+			return -1;
+
 		return this.azimuthRad() * rad2gon; 
 	}
 
 	/**
-	 * provides the azimuth value given in gon as integer in the range 
-	 * <i>0 ... 400</i>. Also see documentation for <tt>this#azimuth</tt>.
+	 * provides the azimuth value (exposition or <i>dip direction</i>) given 
+	 * in gon as integer in the range <i>0 <= azimuthGonInt <= 399</i>. Also 
+	 * see documentation for <tt>this#azimuth</tt>.
 	 * 
-	 * @return Azimuth in gon
+	 * @return Azimuth in gon, or -1 for horizontal, vertical, and zero triangles
 	 * @see {@link #azimuth()}
 	 */
-	public double azimuthGonInt() {
+	public int azimuthGonInt() {
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical) 
+			return -1;
+
 		return (int) Math.round(this.azimuthGon()); 
 	}
 
@@ -320,14 +354,15 @@ public class Orientation
 	/**
 	 * provides the compass direction corresponding to the given orientation. 
 	 * Possible result strings are "N", "NE", "E", "SE", "S", "SW", "W", "NW", 
-	 * or "-" for plain triangles. 
+	 * or "-" for horizontal, vertical, and zero triangles
 	 * 
-	 * @return Compass direction
+	 * @return Compass direction, or "-" if undeterminable
 	 * @see {@link #isPlain()}
 	 */
 	public String compassDirection() 
 	{
-		if (this.isPlain()) return "-";
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical)
+			return "-";
 	
 		int k = (int) Math.round(this.azimuth() / 45.);
 		switch (k) {
@@ -364,7 +399,8 @@ public class Orientation
 	 */
 	public int compassDirectionClass() 
 	{
-		if (this.isPlain()) return 0; // "-"
+		if (this.hasZeroArea || this.isHorizontal || this.isVertical)
+			return 0; // "-"
 	
 		int k = (int) Math.round(this.azimuth() / 45.);
 		switch (k) {
@@ -378,5 +414,96 @@ public class Orientation
 			case 7: return 8; // NW
 		}
 		return 0; // this code line should never be reached
+	}
+	
+	/**
+	 * calculates the strike value (direction of intersection line of triangle 
+	 * and x-y plane) for the triangle given in the constructor. The result is 
+	 * given in degrees, i.e. in the range <i>0 <= strike < 180</i>. For a 
+	 * horizontal triangle the result will be -1. Note that the return value 
+	 * will be -1 if the triangle's area is 0.
+	 * 
+	 * @return Strike value in degrees, or -1 for horizontal or zero triangles 
+	 * @see {@link #hasZeroArea()}
+	 * @see {@link #isPlain()}
+	 */
+	public double strike() {
+		if (this.hasZeroArea || this.isHorizontal)
+			return -1.;
+
+		return this.strikeRad() * rad2degr; 
+	}
+
+	/**
+	 * provides the strike value given in degrees as integer in the range 
+	 * <i>0 <= strikeInt <= 179</i>. Also see documentation for <tt>this#strike</tt>.
+	 * 
+	 * @return Strike in degrees, or -1 for horizontal or zero triangles 
+	 * @see {@link #strike()}
+	 */
+	public int strikeInt() {
+		if (this.hasZeroArea || this.isHorizontal)
+			return -1; 
+		
+		int val = (int) Math.round(this.strike()); 
+		if (val == 180) val = 0;
+		return val;
+	}
+
+	/**
+	 * provides the strike value given in radians in the range <i>0 <= strike < PI</i>. 
+	 * Also see documentation for <tt>this#strike</tt>.
+	 * 
+	 * @return Strike in radians, or -1 for horizontal or zero triangles 
+	 * @see {@link #strike()}
+	 */
+	public double strikeRad() {
+		if (this.hasZeroArea || this.isHorizontal)
+			return -1.;
+		
+		double azimuth;
+		// The following code has been copied from azimuthRad():
+		if (dir.getX() == 0.)
+			azimuth = dir.getY() > 0. ? 0. : Math.PI;
+		else {
+			T3dVector 
+				v0 = new T3dVector(0., 0., 0.),
+				v1 = new T3dVector(0., 1., 0.),
+				v2 = new T3dVector(dir.getX(), dir.getY(), 0.);
+			double phi = v0.angle(v1, v2);
+			azimuth = dir.getX() > 0. ? phi : 2. * Math.PI - phi;			
+		}
+		
+		double strike = azimuth + Math.PI/2.;
+		while (strike >= Math.PI) { strike -= Math.PI; }
+		return strike; 
+	}
+	
+	/**
+	 * provides the strike value given in gon as integer in the range <i>0 <= strikeGon < 200</i>. 
+	 * Also see documentation for <tt>this#strike</tt>.
+	 * 
+	 * @return Strike in gon, or -1 for horizontal or zero triangles 
+	 * @see {@link #strike()}
+	 */
+	public double strikeGon() {
+		if (this.hasZeroArea || this.isHorizontal)
+			return -1.;
+		
+		return this.strikeRad() * rad2gon; 
+	}
+	
+	/**
+	 * provides the strike value given in gon as integer in the range <i>0 <= strikeGonInt <= 199</i>. 
+	 * Also see documentation for <tt>this#strike</tt>.
+	 * 
+	 * @return Strike in gon, or -1 for horizontal or zero triangles 
+	 * @see {@link #strike()}
+	 */
+	public int strikeGonInt() {
+		if (this.hasZeroArea || this.isHorizontal)
+			return -1;
+		
+		return (int) Math.round(this.strikeGon()); 
 	}
 }
