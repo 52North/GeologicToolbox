@@ -47,17 +47,17 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  */
 public class HelloWorld
 {
-	private final String filename = "data/hello_world.obj"; 
-	// ... you might want to change path and filename above.
+    private final String filename = "data/hello_world.obj"; 
+    // ... you might want to change path and filename above.
 
-	
-	public static void main(String args[]) {
-		HelloWorld app = new HelloWorld();
-		app.run();
-	}
-	
-	public void run() 
-	{ 
+
+    public static void main(String args[]) {
+        HelloWorld app = new HelloWorld();
+        app.run();
+    }
+
+    public void run() 
+    { 
         // Construct grid of size 10 x 10:
         VgPoint orig = new GmPoint(0, 0, 0);
         GmSimpleElevationGrid grid = new GmSimpleElevationGrid(10, 10, orig, 100., 100.);
@@ -72,9 +72,9 @@ public class HelloWorld
         System.out.println(grid.maximalElevation());
 
         // Write OBJ output:
-    	IoElevationGridWriter writer = new IoElevationGridWriter(IoFormatType.OBJ);
-    	writer.writeToFile(grid, filename);
-    	System.out.println("Wrote output file \"" + filename + "\"...");
+        IoElevationGridWriter writer = new IoElevationGridWriter(IoFormatType.OBJ);
+        writer.writeToFile(grid, filename);
+        System.out.println("Wrote output file \"" + filename + "\"...");
         System.out.println("Success!");
     }
 }
