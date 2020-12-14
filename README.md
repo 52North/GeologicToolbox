@@ -57,8 +57,8 @@ of a script. Here you have to check the box "Import script".
 That's all!
 
 ### GeologicToolbox for 52n Triturus (for Java Developers)
-If you are a Javaq programmer and want to program your own applications based on
-the toobox's Java packages, here the "quick start" instructions are given:
+If you are a Java programmer and want to program your own applications based on
+the toolbox's Java packages, here the "quick start" instructions are given:
 1. Install Git, e.g. Git for Windows (https://gitforwindows.org/) and TortoiseGit 
 (see https://tortoisegit.org/).
 2. Check out the 52n Triturus source code, e.g. by starting TortoiseGit and giving 
@@ -68,7 +68,9 @@ the repository name: https://github.com/52North/triturus
 http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
 5. Set up your Java project using your favorite IDE, e.g. the Eclipse IDE 
 (download via http://www.eclipse.org). Use the folder triturus\src for your Java 
-source files and do not forget to include the Triturus project.
+source files and do not forget to include the Triturus project. (Using the Eclipse
+IDE, the latter can be done by adding the Triturus project to the build path with
+help of the "Properties..." dialog of the GeologicToolbox project.)   
 6. Compile and/or modify the Java source code in your IDE! (To check whether 
 everything has been installed properly, just compile the class 
 org.n52.v3d.triturus.geologic.examples.HelloWorld).
