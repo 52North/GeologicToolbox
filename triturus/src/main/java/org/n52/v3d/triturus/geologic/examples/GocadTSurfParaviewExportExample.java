@@ -47,8 +47,8 @@ import org.n52.v3d.triturus.gisimplm.GmSimpleTINFeature;
 public class GocadTSurfParaviewExportExample
 {
 	private final String
- 		inFilename = "/projects/GeologicToolbox/data/simple_test.ts",
-		outFilename = "/projects/GeologicToolbox/data/simple_test.vtk"; 
+ 		inFilename = "/projects/GeologicToolbox/data/s_geologie_Zechstein_ts",
+		outFilename = "/projects/GeologicToolbox/data/s_geologie_Zechstein.vtk"; 
 
 	public static void main(String args[]) {
 		new GocadTSurfParaviewExportExample().run();

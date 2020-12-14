@@ -43,7 +43,7 @@ import org.n52.v3d.triturus.vgis.VgIndexedTIN;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import org.opengis.referencing.FactoryException;
+//import org.opengis.referencing.FactoryException; todo
 
 /** 
  * Writer which exports geologic surfaces (TINs) to files. Various formats such
@@ -123,7 +123,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
     {
         int i = 0;
         if (format.equalsIgnoreCase(IoFormatType.VTK_DATASET)) i = 1;
-        else if(format.equalsIgnoreCase(IoFormatType.SHP)) i = 2;
+//TODO        else if(format.equalsIgnoreCase(IoFormatType.SHP)) i = 2;
         // --> add more formats here...
 
         try {

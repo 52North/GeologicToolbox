@@ -76,7 +76,7 @@ public class GocadTSurfClarNotationToShp {
             2. Several attributes are possible. These are to be collected in a list of ShapeFileAttribute's and transferred together. 
              */
             ClarNotationShapeFileAttribute clarNotationAttribute = new ClarNotationShapeFileAttribute(true, true, true, true);
-            List<ShapeFileAttribute> attributes = new ArrayList<>();
+            List<ShapeFileAttribute> attributes = new ArrayList<ShapeFileAttribute>();
             attributes.add(clarNotationAttribute);
 
             /* After initializing your Attributes, you have to init the GeoTool's 
