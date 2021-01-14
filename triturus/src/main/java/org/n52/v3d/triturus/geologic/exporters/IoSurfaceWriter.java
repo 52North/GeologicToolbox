@@ -66,8 +66,8 @@ public class IoSurfaceWriter extends IoAbstractWriter
     	exportDip = false, 
     	exportAzimuth = false, 
     	exportCompassDirection = false,
-    	exportOrientationClass = false;
-    
+    	exportOrientationClass = false,
+    	exportHeight=false;
     /**
      * Constructor. As a parameter, format type has to be set. For unsupported
      * file formats, a <tt>T3dNotYetImplException</tt> will be thrown. Currently, 
@@ -108,6 +108,7 @@ public class IoSurfaceWriter extends IoAbstractWriter
     	this.exportAzimuth = true;
     	this.exportCompassDirection = true;
     	this.exportOrientationClass = true;
+    	this.exportHeight= true;
     }
     
     /**
@@ -172,8 +173,8 @@ public class IoSurfaceWriter extends IoAbstractWriter
                 wl();
             }
 
-            if (this.exportDip || this.exportAzimuth || this.exportCompassDirection) {
-            	wl("CELL_DATA " + geom.numberOfTriangles());            	
+            if (this.exportDip || this.exportAzimuth || this.exportCompassDirection || this.exportHeight) {
+                           	wl("CELL_DATA " + geom.numberOfTriangles());            	
             }
 
             if (this.exportDip) {
@@ -222,6 +223,15 @@ public class IoSurfaceWriter extends IoAbstractWriter
         				}
     				}
     				wl("" + res);
+                }            	
+            }
+            if (this.exportHeight) {
+            	wl("SCALARS HEIGHT double 1");
+            	wl("LOOKUP_TABLE default");
+                for (int i = 0; i < geom.numberOfTriangles(); i++) {
+    				 
+    				double height = (geom.getPoint(geom.getTriangleVertexIndices(i)[0]).getZ()+geom.getPoint(geom.getTriangleVertexIndices(i)[1]).getZ()+geom.getPoint(geom.getTriangleVertexIndices(i)[2]).getZ())/3;
+                    wl("" + height);
                 }            	
             }
 
