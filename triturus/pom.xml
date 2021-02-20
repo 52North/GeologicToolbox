@@ -18,6 +18,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Triturus dependencies -->
         <dependency>
             <groupId>org.n52.v3d</groupId>
@@ -35,23 +41,6 @@
             <artifactId>gt-epsg-hsql</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-swing</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-render</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-main</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        -->
     </dependencies>
     
     <repositories>
@@ -62,31 +51,25 @@
         </repository>
         <repository>
             <id>osgeo</id>
-            <name>Open Source Geospatial Foundation Repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>boundless</id>
-            <name>Boundless Maven Repository</name>
-            <url>http://repo.boundlessgeo.com/main</url>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+      </repository>
+      <repository>
+          <id>osgeo-snapshot</id>
+          <name>OSGeo Snapshot Repository</name>
+          <url>https://repo.osgeo.org/repository/snapshot/</url>
+          <snapshots><enabled>true</enabled></snapshots>
+          <releases><enabled>false</enabled></releases>
+      </repository>
+      <repository>
+          <snapshots>
+              <enabled>true</enabled>
+          </snapshots>
+          <id>boundless</id>
+          <name>Boundless Maven Repository</name>
+          <url>http://repo.boundlessgeo.com/main</url>
         </repository>
     </repositories>
-    
-<!--    <build>
-        <plugins>
-            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>-->
-
 </project>
