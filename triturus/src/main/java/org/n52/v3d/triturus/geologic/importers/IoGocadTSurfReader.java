@@ -18,16 +18,16 @@
  *
  * Therefore the distribution of the program linked with libraries licensed
  * under the aforementioned licenses, is permitted by the copyright holders
- * if the distribution is compliant with both the GNU General Public License 
+ * if the distribution is compliant with both the GNU General Public License
  * version 2 and the aforementioned licenses.
  *
  * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial 
- * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, 
+ * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial
+ * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster,
  * Germany, info@52north.org
  */
 package org.n52.v3d.triturus.geologic.importers;
@@ -53,17 +53,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reader to import a TIN from a GOCAD TSurf file. Note that there are some 
+ * Reader to import a TIN from a GOCAD TSurf file. Note that there are some
  * restrictions concerning this implementation:
  * <ol>
  * <li>GOCAD data file format version 1.0 is assumed.</li>
  * <li>Vertex numbers given in the TSurf file will not be processed. For the
  * n-th given vertex n will be assumed as index number, with n >= 1.</li>
- * <li>Coordinate system support has not been implemented yet, i.e. 
+ * <li>Coordinate system support has not been implemented yet, i.e.
  * coordinates are processed as they are given.</li>
  * </ol>
  * For more details, see source code.
- * 
+ *
  * @author Benno Schmidt
  */
 public class IoGocadTSurfReader extends IoObject
@@ -81,39 +81,39 @@ public class IoGocadTSurfReader extends IoObject
 	@Override
 	public String log() {
 		return logInfo;
-	} 
+	}
 
     /**
      * reads a set of TINs from a given file or URL location.
-     * 
+     *
      * @param location File path or valid URL
      * @return List of TINs, or <i>null</i> if an error occurs
      * @throws org.n52.v3d.triturus.core.T3dException
      * @throws org.n52.v3d.triturus.core.T3dNotYetImplException
      */
-    public List<GmSimpleTINFeature> read(String location) 
+    public List<GmSimpleTINFeature> read(String location)
     {
     	return this.read(location, 2);
     }
-    
-    public List<GmSimpleTINFeature> read(String location, int untilPass) 
+
+    public List<GmSimpleTINFeature> read(String location, int untilPass)
     {
         BufferedReader reader;
         List<GmSimpleTINFeature> tins = null;
-        
+
         try {
         	for (int pass = 1; pass <= untilPass; pass++) {
 				if (location.startsWith("http"))
 					reader = this.createBufferedReader(new URL(location));
 				else
 					reader = this.createBufferedReader(location);
-				
+
 				switch (pass) {
 				case 1:
-					info = this.readGocadTSurf_Pass1(reader, location); 
+					info = this.readGocadTSurf_Pass1(reader, location);
 					break;
 				case 2:
-					tins = this.readGocadTSurf_Pass2(reader, location); 
+					tins = this.readGocadTSurf_Pass2(reader, location);
 					break;
 				}
 				reader.close();
@@ -121,22 +121,22 @@ public class IoGocadTSurfReader extends IoObject
         }
         catch (T3dException e) {
 			throw e;
-        } 
+        }
         catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
         catch (IOException e) {
 			e.printStackTrace();
-        } 
+        }
 
         return tins;
     }
 
     /**
      * gets information about the content of a GOCAD file. The method returns
-     * single information objects for each GOCAD object which is part of the 
+     * single information objects for each GOCAD object which is part of the
      * GOCAD file.
-     * 
+     *
      * @param location File path or valid URL
      * @return Information objects, or <i>null</i> if an error occurs
      */
@@ -144,7 +144,7 @@ public class IoGocadTSurfReader extends IoObject
     	this.read(location, 1);
     	return info;
     }
-    
+
     private BufferedReader createBufferedReader(URL url) {
 		InputStream is = null;
 		BufferedReader reader;
@@ -175,8 +175,8 @@ public class IoGocadTSurfReader extends IoObject
         return reader;
     }
 
-    private List<GocadDataInfo> 
-    	readGocadTSurf_Pass1(BufferedReader reader, String location) 
+    private List<GocadDataInfo>
+    	readGocadTSurf_Pass1(BufferedReader reader, String location)
     	throws T3dException
     {
         int lineNumber = 0;
@@ -186,13 +186,13 @@ public class IoGocadTSurfReader extends IoObject
         info = new ArrayList<GocadDataInfo>();
 
         try { // Quick and dirty "parser" implementation:
-            line = reader.readLine(); 
+            line = reader.readLine();
             lineNumber++;
 
-            while (line != null) 
+            while (line != null)
             {
-	            GocadDataInfo lInfo = null; 
-	
+	            GocadDataInfo lInfo = null;
+
 	            boolean objectBegin = false;
 	            while (line != null && !objectBegin) {
 					tok1 = getStrTok(line, 1, " ");
@@ -201,11 +201,11 @@ public class IoGocadTSurfReader extends IoObject
 						lInfo.setObjectType(getStrTok(line, 2, " "));
 						objectBegin = true;
 					}
-					
-					line = reader.readLine(); 
+
+					line = reader.readLine();
 					lineNumber++;
 	            }
-	            
+
 	            boolean objectEnd = false;
 	            while (line != null && !objectEnd) {
 	            	tok1 = getStrTok(line, 1, " ");
@@ -246,18 +246,18 @@ public class IoGocadTSurfReader extends IoObject
 	            	}
 	            	if (
 	            		"*border*color:".equalsIgnoreCase(tok1) ||
-	            		"*solid*color:".equalsIgnoreCase(tok1)) 
+	            		"*solid*color:".equalsIgnoreCase(tok1))
 	            	{
 	            		if (tok1 != null) {
-	            			boolean solid = 
+	            			boolean solid =
 	            				tok1.equalsIgnoreCase("*solid*color") ? true : false;
 	            			T3dColor col = new T3dColor();
 	            			tok2 = getStrTok(line, 2, ":");
 			            	if (tok2.contains("#")) {
 				            	tok3 = getStrTok(line, 2, "#");
-				            	col.setHexEncodedValue("0x" + tok3);	            		
+				            	col.setHexEncodedValue("0x" + tok3);
 			            	} else {
-				            	float 
+				            	float
 				            		r = toFloat(getStrTok(tok2, 1, " ")),
 				            		g = toFloat(getStrTok(tok2, 2, " ")),
 				            		b = toFloat(getStrTok(tok2, 3, " ")),
@@ -279,13 +279,13 @@ public class IoGocadTSurfReader extends IoObject
 	            	if ("END".equalsIgnoreCase(tok1)) {
 	            		objectEnd = true;
 	            	}
-	            	
-	                line = reader.readLine(); 
+
+	                line = reader.readLine();
 	                lineNumber++;
 	            }
-            
+
             	info.add(lInfo);
-            }           
+            }
 
             System.out.println(
             	"Scanned " + lineNumber + " lines of GOCAD data " +
@@ -309,27 +309,27 @@ public class IoGocadTSurfReader extends IoObject
         }
     }
 
-    private List<GmSimpleTINFeature> 
-		readGocadTSurf_Pass2(BufferedReader reader, String location) 
+    private List<GmSimpleTINFeature>
+		readGocadTSurf_Pass2(BufferedReader reader, String location)
 		throws T3dException
 	{
 		int lineNumber = 0;
 		String line;
 		String tok1;
-	
+
 		tins = new ArrayList<GmSimpleTINFeature>();
 		int i = 0;
 		String lastObj = null;
-	    
+
 	    try { // Quick and dirty "parser" implementation:
-	        line = reader.readLine(); 
+	        line = reader.readLine();
 	        lineNumber++;
 
-	        while (line != null) 
+	        while (line != null)
 	        {
-	            GocadDataInfo lInfo = info.get(i); 
-	            // lInfo gives information about the object to be read next 
-	            	            
+	            GocadDataInfo lInfo = info.get(i);
+	            // lInfo gives information about the object to be read next
+
 	            ArrayList<VgPoint> points = new ArrayList<VgPoint>();
 	            ArrayList<long[]> triangles = new ArrayList<long[]>();
 
@@ -342,22 +342,22 @@ public class IoGocadTSurfReader extends IoObject
 	            		"PVRTX".equalsIgnoreCase(tok1))
 	            	{
 		            	//long id = toLong(getStrTok(line, 2, " "));
-		            	double 
+		            	double
 		            		x = toDouble(getStrTok(line, 3, " ")),
 		            		y = toDouble(getStrTok(line, 4, " ")),
 		            		z = toDouble(getStrTok(line, 5, " "));
 		            	VgPoint p = new GmPoint(x, y, z);
-		            	points.add(p); // without id control yet :-( 
+		            	points.add(p); // without id control yet :-(
 	            	}
 	            	if ("ATOM".equalsIgnoreCase(tok1)) {
-		            	long 
+		            	long
 		            		//id1 = toLong(getStrTok(line, 2, " ")),
 		            		id2 = toLong(getStrTok(line, 3, " "));
 	            		// Duplicate point (again without id control...):
 	            		points.add(points.get((int) id2 - 1));
 	            	}
 	            	if ("TRGL".equalsIgnoreCase(tok1)) {
-		            	long 
+		            	long
 		            		id1 = toLong(getStrTok(line, 2, " ")),
 		            		id2 = toLong(getStrTok(line, 3, " ")),
 		            		id3 = toLong(getStrTok(line, 4, " "));
@@ -381,7 +381,7 @@ public class IoGocadTSurfReader extends IoObject
 	            	}
 
 	            	if (!objectEnd) {
-	            		line = reader.readLine(); 
+	            		line = reader.readLine();
 	            		lineNumber++;
 	            	}
 	            }
@@ -394,7 +394,7 @@ public class IoGocadTSurfReader extends IoObject
 								"Assertion violation: Vertex count difference!"
 								+ " (Read "	+ points.size() + " VRTX/PVRTX elems"
 								+ " while info is " + lInfo.getNumberOfVertices() + ".)"
-								+ " line#:" + lineNumber 
+								+ " line#:" + lineNumber
 								+ " info = " + lInfo);
 					}
 					tinGeom.newPointList(points.size());
@@ -405,20 +405,20 @@ public class IoGocadTSurfReader extends IoObject
 		            // Triangle mesh:
 		            tinGeom.newTriangleList(triangles.size());
 		            for (int ii = 0; ii < triangles.size(); ii++) {
-		            	long[] tri = triangles.get(ii); 
-		                tinGeom.setTriangle(ii, 
+		            	long[] tri = triangles.get(ii);
+		                tinGeom.setTriangle(ii,
 		                	(int)(tri[0] - 1), (int)(tri[1] - 1), (int)(tri[2] - 1));
-		                // TODO in Triturus fuer long ergänzen und dann auch long verwenden!
+		                // TODO in Triturus fuer long ergaenzen und dann auch long verwenden!
 		            }
-	
+
 		            tins.add(tin);
 	            }
 
 				i++;
-				
-				line = reader.readLine(); 
+
+				line = reader.readLine();
 				lineNumber++;
-	        }           
+	        }
 	    }
 	    catch (FileNotFoundException e) {
 			throw new T3dException(
@@ -435,8 +435,8 @@ public class IoGocadTSurfReader extends IoObject
 			throw new T3dException(
 					"Parser error in \"" + location + "\":" + lineNumber);
 	    }
-	    
-        System.out.println("Imported " + tins.size() + " TSurf object(s)."); 
+
+        System.out.println("Imported " + tins.size() + " TSurf object(s).");
         return tins;
 	}
 
@@ -446,7 +446,7 @@ public class IoGocadTSurfReader extends IoObject
     {
         // extract i-th token (i >= 1!) from a string with 'sep' as separator
 
-        ArrayList<String> strArr = new ArrayList<String>(); 
+        ArrayList<String> strArr = new ArrayList<String>();
         strArr.add(str);
         int i0 = 0, i1 = 0, k = 0;
         while (i1 >= 0) {
@@ -467,15 +467,15 @@ public class IoGocadTSurfReader extends IoObject
         if (i < 1)
             throw new T3dException("Logical parser error.");
         return (String) strArr.get(i - 1);
-    } 
+    }
 
     private double toDouble(String str) {
         return Double.parseDouble(str);
-    } 
+    }
 
     private float toFloat(String str) {
         return Float.parseFloat(str);
-    } 
+    }
 
     private long toLong(String str) {
         return Long.parseLong(str);
