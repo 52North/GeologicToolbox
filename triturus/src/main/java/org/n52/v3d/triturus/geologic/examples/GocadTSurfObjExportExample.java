@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2018-2019 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt and Martin May, 52 North Initiative for Geospatial 
+ * Contact: Benno Schmidt and Martin May, 52North Initiative for Geospatial 
  * Open Source Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, 
  * Germany, info@52north.org
  */

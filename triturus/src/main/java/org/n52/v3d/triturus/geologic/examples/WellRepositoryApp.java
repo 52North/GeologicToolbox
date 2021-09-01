@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2020 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2020 52North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt, 52 North Initiative for Geospatial Open Source 
+ * Contact: Benno Schmidt, 52North Initiative for Geospatial Open Source 
  * Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, Germany, 
  * info@52north.org
  */
@@ -40,45 +40,45 @@ import org.n52.v3d.triturus.geologic.data.WellRepository;
 import org.n52.v3d.triturus.geologic.importers.IoWellCsvReader;
  
 /**
- * Geologic Toolbox example application: Reads a CSV file with exported from a 
+ * GeologicToolbox example application: Reads a CSV file with exported from a 
  * GOCAD well object.
  * 
  * @author Benno Schmidt
  */
 public class WellRepositoryApp
 {
-	private String
-		inFilename1 = "/projects/GeologicToolbox/data/wells_locations_test.csv",
-		inFilename2 = "/projects/GeologicToolbox/data/real_and_virtual_wells.csv";
-	
-	public static void main(String args[]) {
-		new WellRepositoryApp().run();
-	}
-	
-	public void run() 
-	{ 
-		IoWellCsvReader reader = new IoWellCsvReader();
-		WellRepository repo = new WellRepository();
-		
-		try {
-			reader.addToRepository(inFilename1, repo);	
-			reader.addToRepository(inFilename2, repo);	
-		}
-		catch (T3dException e) {
-			e.printStackTrace();
-		}
+    private String
+        inFilename1 = "/projects/GeologicToolbox/data/wells_locations_test.csv",
+        inFilename2 = "/projects/GeologicToolbox/data/real_and_virtual_wells.csv";
+    
+    public static void main(String args[]) {
+        new WellRepositoryApp().run();
+    }
+    
+    public void run() 
+    { 
+        IoWellCsvReader reader = new IoWellCsvReader();
+        WellRepository repo = new WellRepository();
+        
+        try {
+            reader.addToRepository(inFilename1, repo);  
+            reader.addToRepository(inFilename2, repo);  
+        }
+        catch (T3dException e) {
+            e.printStackTrace();
+        }
 
-		/*
-		List<Well> wells = repo.getWells();		
-		if (wells != null) {
-			for (Well w : wells) {
-				System.out.println(w);
-				System.out.println(w.getMarkers());
-			}
-		}
-		*/
+        /*
+        List<Well> wells = repo.getWells();     
+        if (wells != null) {
+            for (Well w : wells) {
+                System.out.println(w);
+                System.out.println(w.getMarkers());
+            }
+        }
+        */
 
-		System.out.println("Managed well objects: " + repo.numberWells());
-		System.out.println("Managed markers: " + repo.numberMarkers());		
-	}
+        System.out.println("Managed well objects: " + repo.numberWells());
+        System.out.println("Managed markers: " + repo.numberMarkers());     
+    }
 }

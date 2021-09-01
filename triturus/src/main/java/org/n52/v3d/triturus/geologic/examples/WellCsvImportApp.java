@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2020 52 North Initiative for Geospatial Open Source
+ * Copyright (C) 2020 52North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt, 52 North Initiative for Geospatial Open Source 
+ * Contact: Benno Schmidt, 52North Initiative for Geospatial Open Source 
  * Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, Germany, 
  * info@52north.org
  */
@@ -39,38 +39,41 @@ import org.n52.v3d.triturus.geologic.data.Well;
 import org.n52.v3d.triturus.geologic.importers.IoWellCsvReader;
  
 /**
- * Geologic Toolbox example application: Reads a CSV file with exported from a 
+ * GeologicToolbox example application: Reads a CSV file with exported from a 
  * GOCAD well object.
  * 
  * @author Benno Schmidt
  */
 public class WellCsvImportApp
 {
-	private String
-		inFilename = "/projects/GeologicToolbox/data/wells_locations_test.csv";
-	
-	public static void main(String args[]) {
-		new WellCsvImportApp().run();
-	}
-	
-	public void run() 
-	{ 
-		List<Well> wells = null;
+    private String
+        inFilename = "/projects/GeologicToolbox/data/wells_locations_test.csv";
+    
+    public static void main(String args[]) {
+        new WellCsvImportApp().run(args);
+    }
+    
+    public void run(String args[]) 
+    { 
+    	if (args.length > 0 && args[0] != null) {
+    		inFilename = args[0];
+    	}
+        List<Well> wells = null;
 
-		try {
-			wells = new IoWellCsvReader().read(inFilename);	
-		}
-		catch (T3dException e) {
-			e.printStackTrace();
-		}
-		
-		if (wells != null) {
-			for (Well w : wells) {
-				System.out.println(w);
-				System.out.println(w.getMarkers());
-			}
-		}
-		
-		System.out.println("Created " + wells.size() + " well objects.");
-	}
+        try {
+            wells = new IoWellCsvReader().read(inFilename); 
+        }
+        catch (T3dException e) {
+            e.printStackTrace();
+        }
+        
+        if (wells != null) {
+            for (Well w : wells) {
+                System.out.println(w);
+                System.out.println(w.getMarkers());
+            }
+        }
+        
+        System.out.println("Created " + wells.size() + " well objects.");
+    }
 }

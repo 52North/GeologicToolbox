@@ -26,13 +26,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
  * for more details.
  *
- * Contact: Benno Schmidt, 52 North Initiative for Geospatial Open Source 
+ * Contact: Benno Schmidt, 52North Initiative for Geospatial Open Source 
  * Software GmbH, Martin-Luther-King-Weg 24, 48155 Muenster, Germany, 
  * b.schmidt@52north.org
  */
 package org.n52.v3d.triturus.geologic.examples;
 
 import java.io.IOException;
+
 import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.exporters.IoShapeWriter;
@@ -79,7 +80,17 @@ public class ElevationGridToShp {
             shpWriter.writeShapeFile(outFilename);
 
             System.out.println("Wrote the file \"" + outFilename + "\".");
-        } catch (T3dException | T3dNotYetImplException | FactoryException | IOException e) {
+        } 
+        catch (T3dException e) {
+            e.printStackTrace();
+        }
+        catch (T3dNotYetImplException e) {
+            e.printStackTrace();
+        }
+        catch (FactoryException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }

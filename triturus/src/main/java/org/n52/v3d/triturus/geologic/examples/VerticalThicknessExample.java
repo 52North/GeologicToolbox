@@ -58,7 +58,7 @@ import org.n52.v3d.triturus.vgis.VgPoint;
 import org.n52.v3d.triturus.vgis.VgProfile;
 
 /**
- * Geologic Toolbox example application: Reads two GOCAD TSurf TINs and 
+ * GeologicToolbox example application: Reads two GOCAD TSurf TINs and 
  * computes the difference body in between based on a simple 2-D rasterization
  * algorithm. The result is a tetrahedronal mesh with vertical thickness data
  * as cell attributes. (To generate triangular surfaces instead, set the switch
@@ -72,293 +72,293 @@ import org.n52.v3d.triturus.vgis.VgProfile;
  */
 public class VerticalThicknessExample
 {
-	private final String
-		inFilename1 = "/projects/GeologicToolbox/data/s_geologie_Rotliegend_ts",
-		inFilename2 = "/projects/GeologicToolbox/data/s_geologie_Zechstein_ts",
-		outFilename = "/projects/GeologicToolbox/data/s_geologie_body.vtk"; 
-	private final double cellSize = 500.; 
-	private final boolean wedgeMode = true; 
-		// set this switch to generate wedges instead of tetrahedronal cells...
-	private final boolean generateCrossSection = true; 
-		// set this switch to generate a cross section through the surfaces...
-	private final String
-		outSecFilename1 = "/projects/GeologicToolbox/data/s_geologie_Rotliegend_sec.svg",
-		outSecFilename2 = "/projects/GeologicToolbox/data/s_geologie_Zechstein_sec.svg";
-	
-	public static void main(String args[]) {
-		new VerticalThicknessExample().run();
-	}
-	
-	public void run() 
-	{ 
-		try {
-			// Give basic information about the surfaces:
-			this.provideFileInformation();
+    private final String
+        inFilename1 = "/projects/GeologicToolbox/data/s_geologie_Rotliegend_ts",
+        inFilename2 = "/projects/GeologicToolbox/data/s_geologie_Zechstein_ts",
+        outFilename = "/projects/GeologicToolbox/data/s_geologie_body.vtk"; 
+    private final double cellSize = 500.; 
+    private final boolean wedgeMode = true; 
+        // set this switch to generate wedges instead of tetrahedronal cells...
+    private final boolean generateCrossSection = true; 
+        // set this switch to generate a cross section through the surfaces...
+    private final String
+        outSecFilename1 = "/projects/GeologicToolbox/data/s_geologie_Rotliegend_sec.svg",
+        outSecFilename2 = "/projects/GeologicToolbox/data/s_geologie_Zechstein_sec.svg";
+    
+    public static void main(String args[]) {
+        new VerticalThicknessExample().run();
+    }
+    
+    public void run() 
+    { 
+        try {
+            // Give basic information about the surfaces:
+            this.provideFileInformation();
 
-			// Read TSurf models from GOCAD data files...
-			IoGocadTSurfReader reader = new IoGocadTSurfReader();
-			GmSimpleTINFeature 
-				surf1 = reader.read(inFilename1).get(0),
-				surf2 = reader.read(inFilename2).get(0);
+            // Read TSurf models from GOCAD data files...
+            IoGocadTSurfReader reader = new IoGocadTSurfReader();
+            GmSimpleTINFeature 
+                surf1 = reader.read(inFilename1).get(0),
+                surf2 = reader.read(inFilename2).get(0);
 
-			// Provide some test output:
-			System.out.println(surf1.envelope());
-			System.out.println(surf2.envelope());
-			
-			// Set up the target grid's geometry:
-			VgEnvelope bbox = GmEnvelope.intersect(
-				surf1.envelope(), 
-				surf2.envelope());
-			System.out.println("Target BBOX: " + bbox);
-	        VgEquidistGrid grdGeom = this.setUpGeometry(bbox);
-	        System.out.println(grdGeom);
+            // Provide some test output:
+            System.out.println(surf1.envelope());
+            System.out.println(surf2.envelope());
+            
+            // Set up the target grid's geometry:
+            VgEnvelope bbox = GmEnvelope.intersect(
+                surf1.envelope(), 
+                surf2.envelope());
+            System.out.println("Target BBOX: " + bbox);
+            VgEquidistGrid grdGeom = this.setUpGeometry(bbox);
+            System.out.println(grdGeom);
 
-	        // Rasterize input surfaces:
-	        FltTIN2ElevationGrid trans = new FltTIN2ElevationGrid();
-	        trans.setGridGeometry(grdGeom);
-	        trans.setZConflictHandler(FltTIN2ElevationGrid.CONFLICT_TAKE_MAX_Z);
-	        GmSimpleElevationGrid 
-	        	grid1 = (GmSimpleElevationGrid) trans.transform(surf1),
-	        	grid2 = (GmSimpleElevationGrid) trans.transform(surf2);
-	        // Note: With respect to the x-y plane, grd1 and grd2 share the 
-	        // same grid geometry.
-	        System.out.println("grid1: " + grid1);
-	        System.out.println("grid2: " + grid2);
-	        
-	        if (!wedgeMode) {
-		        // Construct tetrahedronal mesh:
-		        GmSimpleTetrMesh mesh = 
-		        	this.constructTetrahedronalMesh(bbox, grdGeom, grid1, grid2);
-		        // Write tetrahedronal mesh to VTK/ParaView file:
-	            System.out.println("Writing result file \"" + outFilename + "\"...");
-	            IoTetrMeshWriter writer = new IoTetrMeshWriter(IoFormatType.VTK_DATASET);
-	            writer.generateVerticalThicknessAttr();
-	            writer.generateZAttr();
-	            writer.writeToFile(mesh, outFilename);
-	        }
-	        else {
-		        // Construct wedge mesh:
-		        GmSimpleWedgeMesh mesh = 
-		        	this.constructWedgeMesh(bbox, grdGeom, grid1, grid2);
-		        // Write wedge mesh to VTK/ParaView file:
-	            System.out.println("Writing result file \"" + outFilename + "\" (wedge mesh)...");
-	            IoWedgeMeshWriter writer = new IoWedgeMeshWriter(IoFormatType.VTK_DATASET);
-	            writer.generateVerticalThicknessAttr();
-	            writer.generateAssumedThicknessAttr();
-	            writer.generateThicknessDeltaAttr();
-	            writer.writeToFile(mesh, outFilename);
-	        }
-	        
-	        if (generateCrossSection) {
-	    		VgPoint 
-	    			from = new GmPoint(bbox.getXMin(), bbox.getYMin(), 0.),
-	    			to = new GmPoint(bbox.getXMax(), bbox.getYMax(), 0.);
-		        this.generateCrossSection(from, to, grid1, grid2);
-	        }
-	        
+            // Rasterize input surfaces:
+            FltTIN2ElevationGrid trans = new FltTIN2ElevationGrid();
+            trans.setGridGeometry(grdGeom);
+            trans.setZConflictHandler(FltTIN2ElevationGrid.CONFLICT_TAKE_MAX_Z);
+            GmSimpleElevationGrid 
+                grid1 = (GmSimpleElevationGrid) trans.transform(surf1),
+                grid2 = (GmSimpleElevationGrid) trans.transform(surf2);
+            // Note: With respect to the x-y plane, grd1 and grd2 share the 
+            // same grid geometry.
+            System.out.println("grid1: " + grid1);
+            System.out.println("grid2: " + grid2);
+            
+            if (!wedgeMode) {
+                // Construct tetrahedronal mesh:
+                GmSimpleTetrMesh mesh = 
+                    this.constructTetrahedronalMesh(bbox, grdGeom, grid1, grid2);
+                // Write tetrahedronal mesh to VTK/ParaView file:
+                System.out.println("Writing result file \"" + outFilename + "\"...");
+                IoTetrMeshWriter writer = new IoTetrMeshWriter(IoFormatType.VTK_DATASET);
+                writer.generateVerticalThicknessAttr();
+                writer.generateZAttr();
+                writer.writeToFile(mesh, outFilename);
+            }
+            else {
+                // Construct wedge mesh:
+                GmSimpleWedgeMesh mesh = 
+                    this.constructWedgeMesh(bbox, grdGeom, grid1, grid2);
+                // Write wedge mesh to VTK/ParaView file:
+                System.out.println("Writing result file \"" + outFilename + "\" (wedge mesh)...");
+                IoWedgeMeshWriter writer = new IoWedgeMeshWriter(IoFormatType.VTK_DATASET);
+                writer.generateVerticalThicknessAttr();
+                writer.generateAssumedThicknessAttr();
+                writer.generateThicknessDeltaAttr();
+                writer.writeToFile(mesh, outFilename);
+            }
+            
+            if (generateCrossSection) {
+                VgPoint 
+                    from = new GmPoint(bbox.getXMin(), bbox.getYMin(), 0.),
+                    to = new GmPoint(bbox.getXMax(), bbox.getYMax(), 0.);
+                this.generateCrossSection(from, to, grid1, grid2);
+            }
+            
             System.out.println("Success!");
-		}
-		catch (T3dException e) {
-			e.printStackTrace();
-		}
-	}
+        }
+        catch (T3dException e) {
+            e.printStackTrace();
+        }
+    }
 
-	private void provideFileInformation() {
-		List<GocadDataInfo> 
-			info1 = null, 
-			info2 = null;
-		try {
-			info1 = new IoGocadTSurfReader().getInfo(inFilename1);	        
-			info2 = new IoGocadTSurfReader().getInfo(inFilename2);	        
-		}
-		catch (T3dException e) {
-			e.printStackTrace();
-		}
-		if (info1 != null) {
-			for (GocadDataInfo i : info1) {
-				System.out.println(i);
-			}
-		}
-		if (info2 != null) {
-			for (GocadDataInfo i : info2) {
-				System.out.println(i);
-			}
-		}
-	}
-	
-	private VgEquidistGrid setUpGeometry(VgEnvelope bbox) 
+    private void provideFileInformation() {
+        List<GocadDataInfo> 
+            info1 = null, 
+            info2 = null;
+        try {
+            info1 = new IoGocadTSurfReader().getInfo(inFilename1);          
+            info2 = new IoGocadTSurfReader().getInfo(inFilename2);          
+        }
+        catch (T3dException e) {
+            e.printStackTrace();
+        }
+        if (info1 != null) {
+            for (GocadDataInfo i : info1) {
+                System.out.println(i);
+            }
+        }
+        if (info2 != null) {
+            for (GocadDataInfo i : info2) {
+                System.out.println(i);
+            }
+        }
+    }
+    
+    private VgEquidistGrid setUpGeometry(VgEnvelope bbox) 
     {
         System.out.println(bbox);
 
-		VgPoint origin = new GmPoint(bbox.getXMin(), bbox.getYMin(), 0.0);
-		// TODO: origin ist noch ein schraeger Wert -> ist zu runden gemaess cellSize!
-		
-		int nrows = (int)(Math.floor(bbox.getExtentY() / cellSize)) + 1;
-		int ncols = (int)(Math.floor(bbox.getExtentX() / cellSize)) + 1;
-		        
-		GmSimple2dGridGeometry res = new GmSimple2dGridGeometry(
-			ncols, nrows, origin, cellSize, cellSize);
+        VgPoint origin = new GmPoint(bbox.getXMin(), bbox.getYMin(), 0.0);
+        // TODO: origin ist noch ein schraeger Wert -> ist zu runden gemaess cellSize!
+        
+        int nrows = (int)(Math.floor(bbox.getExtentY() / cellSize)) + 1;
+        int ncols = (int)(Math.floor(bbox.getExtentX() / cellSize)) + 1;
+                
+        GmSimple2dGridGeometry res = new GmSimple2dGridGeometry(
+            ncols, nrows, origin, cellSize, cellSize);
         return res;
-	}
-	
-	private GmSimpleTetrMesh constructTetrahedronalMesh(
-			VgEnvelope bbox,
-			VgEquidistGrid grdGeom, 
-			GmSimpleElevationGrid grid1,
-			GmSimpleElevationGrid grid2) 
-	{
-		int 
-			M = grdGeom.numberOfColumns(), 
-			N = grdGeom.numberOfRows();
-		GmSimpleTetrMesh mesh = new GmSimpleTetrMesh();
-		VgPoint dummy = bbox.getCenterPoint();
-		int ct = 0;
-		for (int jj = 0; jj < M; jj++) {
-			for (int ii = 0; ii < N; ii++) {
-				VgPoint p1 = new GmPoint();
-				if (grid1.isSet(ii, jj))
-					p1.set(grid1.getPoint(ii, jj));
-				else
-					p1.set(dummy);
-				mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
-				if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
-				VgPoint p2 = new GmPoint();
-				if (grid2.isSet(ii, jj))
-					p2.set(grid2.getPoint(ii, jj));
-				else
-					p2.set(dummy);
-				mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
-				if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
-			}
-		}
-		//System.out.println("ct = " + ct);
-		boolean s10, s11, s12, s13, s20, s21, s22, s23;
-		int i10, i11, i12, i13, i20, i21, i22, i23;
-		for (int jj = 0; jj < M - 1; jj++) {
-			for (int ii = 0; ii < N - 1; ii++) {
-				s10 = grid1.isSet(ii,     jj);
-				s11 = grid1.isSet(ii,     jj + 1);
-				s12 = grid1.isSet(ii + 1, jj + 1);
-				s13 = grid1.isSet(ii + 1, jj);
-				s20 = grid2.isSet(ii,     jj);
-				s21 = grid2.isSet(ii,     jj + 1);
-				s22 = grid2.isSet(ii + 1, jj + 1);
-				s23 = grid2.isSet(ii + 1, jj);
-				i10 = 2 * ( ii      + N *  jj     );
-				i11 = 2 * ( ii      + N * (jj + 1));
-				i12 = 2 * ((ii + 1) + N * (jj + 1));
-				i13 = 2 * ((ii + 1) + N *  jj     );
-				i20 = 2 * ( ii      + N *  jj     ) + 1;
-				i21 = 2 * ( ii      + N * (jj + 1)) + 1;
-				i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
-				i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
-				if (s10 && s11 && s12 && s13 && s20 && s21 && s22 & s23) {
-					mesh.addTetrahedron(i10, i11, i13, i20);
-					mesh.addTetrahedron(i12, i13, i11, i22);
-					mesh.addTetrahedron(i21, i22, i20, i11);
-					mesh.addTetrahedron(i23, i20, i22, i13);
-					mesh.addTetrahedron(i11, i20, i22, i13);
-				}	
-			}
-		}
-		System.out.println(mesh);
-		return mesh;
-	}
+    }
+    
+    private GmSimpleTetrMesh constructTetrahedronalMesh(
+            VgEnvelope bbox,
+            VgEquidistGrid grdGeom, 
+            GmSimpleElevationGrid grid1,
+            GmSimpleElevationGrid grid2) 
+    {
+        int 
+            M = grdGeom.numberOfColumns(), 
+            N = grdGeom.numberOfRows();
+        GmSimpleTetrMesh mesh = new GmSimpleTetrMesh();
+        VgPoint dummy = bbox.getCenterPoint();
+        int ct = 0;
+        for (int jj = 0; jj < M; jj++) {
+            for (int ii = 0; ii < N; ii++) {
+                VgPoint p1 = new GmPoint();
+                if (grid1.isSet(ii, jj))
+                    p1.set(grid1.getPoint(ii, jj));
+                else
+                    p1.set(dummy);
+                mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
+                if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
+                VgPoint p2 = new GmPoint();
+                if (grid2.isSet(ii, jj))
+                    p2.set(grid2.getPoint(ii, jj));
+                else
+                    p2.set(dummy);
+                mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
+                if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
+            }
+        }
+        //System.out.println("ct = " + ct);
+        boolean s10, s11, s12, s13, s20, s21, s22, s23;
+        int i10, i11, i12, i13, i20, i21, i22, i23;
+        for (int jj = 0; jj < M - 1; jj++) {
+            for (int ii = 0; ii < N - 1; ii++) {
+                s10 = grid1.isSet(ii,     jj);
+                s11 = grid1.isSet(ii,     jj + 1);
+                s12 = grid1.isSet(ii + 1, jj + 1);
+                s13 = grid1.isSet(ii + 1, jj);
+                s20 = grid2.isSet(ii,     jj);
+                s21 = grid2.isSet(ii,     jj + 1);
+                s22 = grid2.isSet(ii + 1, jj + 1);
+                s23 = grid2.isSet(ii + 1, jj);
+                i10 = 2 * ( ii      + N *  jj     );
+                i11 = 2 * ( ii      + N * (jj + 1));
+                i12 = 2 * ((ii + 1) + N * (jj + 1));
+                i13 = 2 * ((ii + 1) + N *  jj     );
+                i20 = 2 * ( ii      + N *  jj     ) + 1;
+                i21 = 2 * ( ii      + N * (jj + 1)) + 1;
+                i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
+                i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
+                if (s10 && s11 && s12 && s13 && s20 && s21 && s22 & s23) {
+                    mesh.addTetrahedron(i10, i11, i13, i20);
+                    mesh.addTetrahedron(i12, i13, i11, i22);
+                    mesh.addTetrahedron(i21, i22, i20, i11);
+                    mesh.addTetrahedron(i23, i20, i22, i13);
+                    mesh.addTetrahedron(i11, i20, i22, i13);
+                }   
+            }
+        }
+        System.out.println(mesh);
+        return mesh;
+    }
 
-	private GmSimpleWedgeMesh constructWedgeMesh(
-			VgEnvelope bbox,
-			VgEquidistGrid grdGeom, 
-			GmSimpleElevationGrid grid1,
-			GmSimpleElevationGrid grid2) 
-	{
-		int 
-			M = grdGeom.numberOfColumns(), 
-			N = grdGeom.numberOfRows();
-		GmSimpleWedgeMesh mesh = new GmSimpleWedgeMesh();
-		VgPoint dummy = bbox.getCenterPoint();
-		int ct = 0;
-		for (int jj = 0; jj < M; jj++) {
-			for (int ii = 0; ii < N; ii++) {
-				VgPoint p1 = new GmPoint();
-				if (grid1.isSet(ii, jj))
-					p1.set(grid1.getPoint(ii, jj));
-				else
-					p1.set(dummy);
-				mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
-				if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
-				VgPoint p2 = new GmPoint();
-				if (grid2.isSet(ii, jj))
-					p2.set(grid2.getPoint(ii, jj));
-				else
-					p2.set(dummy);
-				mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
-				if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
-			}
-		}
-		//System.out.println("ct = " + ct);
-		boolean s10, s11, s12, s13, s20, s21, s22, s23;
-		int i10, i11, i12, i13, i20, i21, i22, i23;
-		for (int jj = 0; jj < M - 1; jj++) {
-			for (int ii = 0; ii < N - 1; ii++) {
-				s10 = grid1.isSet(ii,     jj);
-				s11 = grid1.isSet(ii,     jj + 1);
-				s12 = grid1.isSet(ii + 1, jj + 1);
-				s13 = grid1.isSet(ii + 1, jj);
-				s20 = grid2.isSet(ii,     jj);
-				s21 = grid2.isSet(ii,     jj + 1);
-				s22 = grid2.isSet(ii + 1, jj + 1);
-				s23 = grid2.isSet(ii + 1, jj);
-				i10 = 2 * ( ii      + N *  jj     );
-				i11 = 2 * ( ii      + N * (jj + 1));
-				i12 = 2 * ((ii + 1) + N * (jj + 1));
-				i13 = 2 * ((ii + 1) + N *  jj     );
-				i20 = 2 * ( ii      + N *  jj     ) + 1;
-				i21 = 2 * ( ii      + N * (jj + 1)) + 1;
-				i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
-				i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
-				if (s10 && s11 && s13 && s20 && s21 && s23) {
-					mesh.addWedge(i10, i11, i13, i20, i21, i23);
-				}	
-				if (s11 && s12 && s13 && s21 && s22 && s23) {
-					mesh.addWedge(i11, i12, i13, i21, i22, i23);
-				}	
-			}
-		}
-		System.out.println(mesh);
-		return mesh;
-	}
-	
-	private void generateCrossSection(
-		VgPoint from, VgPoint to,
-		GmSimpleElevationGrid grid1, GmSimpleElevationGrid grid2) 
-	{
-		// Set up definition line:
-		GmLineString defLine = new GmLineString();
-		double d = from.distanceXY(to);
-		for (int t = 0; t < d; t += 25000) {
-			double s = ((double) t) / d;
-			VgPoint pos = new GmPoint(
-				from.getX() + s * (to.getX() - from.getX()),
-				from.getY() + s * (to.getY() - from.getY()),
-				42.);
-			defLine.addVertex(pos);
-		}
-		defLine.addVertex(to);
-		
-		// Generate cross-sections: 
-		VgProfile 
-			sec1 = new FltElevationGrid2Profile().transform(grid1, defLine),
-			sec2 = new FltElevationGrid2Profile().transform(grid2, defLine);
+    private GmSimpleWedgeMesh constructWedgeMesh(
+            VgEnvelope bbox,
+            VgEquidistGrid grdGeom, 
+            GmSimpleElevationGrid grid1,
+            GmSimpleElevationGrid grid2) 
+    {
+        int 
+            M = grdGeom.numberOfColumns(), 
+            N = grdGeom.numberOfRows();
+        GmSimpleWedgeMesh mesh = new GmSimpleWedgeMesh();
+        VgPoint dummy = bbox.getCenterPoint();
+        int ct = 0;
+        for (int jj = 0; jj < M; jj++) {
+            for (int ii = 0; ii < N; ii++) {
+                VgPoint p1 = new GmPoint();
+                if (grid1.isSet(ii, jj))
+                    p1.set(grid1.getPoint(ii, jj));
+                else
+                    p1.set(dummy);
+                mesh.addPoint(p1); // this point's index will be 2 * (ii + N * jj)
+                if (ct++ != 2 * (ii + N * jj)) throw new T3dException("Corrupt vertex index");
+                VgPoint p2 = new GmPoint();
+                if (grid2.isSet(ii, jj))
+                    p2.set(grid2.getPoint(ii, jj));
+                else
+                    p2.set(dummy);
+                mesh.addPoint(p2); // this point's index will be 2 * (ii + N * jj) + 1
+                if (ct++ != 2 * (ii + N * jj) + 1) throw new T3dException("Corrupt vertex index");
+            }
+        }
+        //System.out.println("ct = " + ct);
+        boolean s10, s11, s12, s13, s20, s21, s22, s23;
+        int i10, i11, i12, i13, i20, i21, i22, i23;
+        for (int jj = 0; jj < M - 1; jj++) {
+            for (int ii = 0; ii < N - 1; ii++) {
+                s10 = grid1.isSet(ii,     jj);
+                s11 = grid1.isSet(ii,     jj + 1);
+                s12 = grid1.isSet(ii + 1, jj + 1);
+                s13 = grid1.isSet(ii + 1, jj);
+                s20 = grid2.isSet(ii,     jj);
+                s21 = grid2.isSet(ii,     jj + 1);
+                s22 = grid2.isSet(ii + 1, jj + 1);
+                s23 = grid2.isSet(ii + 1, jj);
+                i10 = 2 * ( ii      + N *  jj     );
+                i11 = 2 * ( ii      + N * (jj + 1));
+                i12 = 2 * ((ii + 1) + N * (jj + 1));
+                i13 = 2 * ((ii + 1) + N *  jj     );
+                i20 = 2 * ( ii      + N *  jj     ) + 1;
+                i21 = 2 * ( ii      + N * (jj + 1)) + 1;
+                i22 = 2 * ((ii + 1) + N * (jj + 1)) + 1;
+                i23 = 2 * ((ii + 1) + N *  jj     ) + 1;
+                if (s10 && s11 && s13 && s20 && s21 && s23) {
+                    mesh.addWedge(i10, i11, i13, i20, i21, i23);
+                }   
+                if (s11 && s12 && s13 && s21 && s22 && s23) {
+                    mesh.addWedge(i11, i12, i13, i21, i22, i23);
+                }   
+            }
+        }
+        System.out.println(mesh);
+        return mesh;
+    }
+    
+    private void generateCrossSection(
+        VgPoint from, VgPoint to,
+        GmSimpleElevationGrid grid1, GmSimpleElevationGrid grid2) 
+    {
+        // Set up definition line:
+        GmLineString defLine = new GmLineString();
+        double d = from.distanceXY(to);
+        for (int t = 0; t < d; t += 25000) {
+            double s = ((double) t) / d;
+            VgPoint pos = new GmPoint(
+                from.getX() + s * (to.getX() - from.getX()),
+                from.getY() + s * (to.getY() - from.getY()),
+                42.);
+            defLine.addVertex(pos);
+        }
+        defLine.addVertex(to);
+        
+        // Generate cross-sections: 
+        VgProfile 
+            sec1 = new FltElevationGrid2Profile().transform(grid1, defLine),
+            sec2 = new FltElevationGrid2Profile().transform(grid2, defLine);
 
-		// Generate output files:
-		IoProfileWriter writer = new IoProfileWriter(IoProfileWriter.SVG); 
-		SVGParameters params = writer.SVGParams;
-		params.titleText = "Cross-section";	        	
-		params.infoText = "Generated by the 52n GeologicToolbox";	        
-		params.imageWidth = 1000;
-		System.out.println("Writing result file \"" + outSecFilename1 + "\"...");
-		writer.writeToFile(sec1, outSecFilename1);
-		System.out.println("Writing result file \"" + outSecFilename2 + "\"...");
-		writer.writeToFile(sec2, outSecFilename2);
-	}
+        // Generate output files:
+        IoProfileWriter writer = new IoProfileWriter(IoProfileWriter.SVG); 
+        SVGParameters params = writer.SVGParams;
+        params.titleText = "Cross-section";             
+        params.infoText = "Generated by the 52n GeologicToolbox";           
+        params.imageWidth = 1000;
+        System.out.println("Writing result file \"" + outSecFilename1 + "\"...");
+        writer.writeToFile(sec1, outSecFilename1);
+        System.out.println("Writing result file \"" + outSecFilename2 + "\"...");
+        writer.writeToFile(sec2, outSecFilename2);
+    }
 }
