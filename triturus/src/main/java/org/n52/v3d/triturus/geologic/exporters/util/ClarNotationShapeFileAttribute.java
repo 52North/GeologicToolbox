@@ -105,10 +105,10 @@ public class ClarNotationShapeFileAttribute extends ShapeFileAttribute {
             sfBuilder.add(orient.dip());
         }
         if (dipDir) {
-            sfBuilder.add(42.);
+            sfBuilder.add(orient.azimuth());
         }
         if (strike) {
-            sfBuilder.add(orient.azimuth());
+            sfBuilder.add(orient.strike());
         }
         if (compassDirection) {
             sfBuilder.add(orient.compassDirection());
