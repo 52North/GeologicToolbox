@@ -100,7 +100,7 @@ public class IoShapeWriter extends IoAbstractWriter {
     public IoShapeWriter(int type) {
         logString = this.getClass().getName();
         this.type = type;
-        this.features = new ArrayList<>();
+        this.features = new ArrayList<SimpleFeature>();
     }
 
     /**
@@ -323,7 +323,7 @@ public class IoShapeWriter extends IoAbstractWriter {
         // create ne File object, open dataStore
         File newFile = new File(path);
         ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
-        Map<String, Serializable> params = new HashMap<>();
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
         // optional: add url and create spaital index
         params.put("url", newFile.toURI().toURL());
         params.put("create spatial index", Boolean.TRUE);
