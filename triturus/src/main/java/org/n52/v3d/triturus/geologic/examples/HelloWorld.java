@@ -40,8 +40,9 @@ import org.n52.v3d.triturus.gisimplm.IoElevationGridWriter;
 import org.n52.v3d.triturus.vgis.VgPoint;
 
 /**
- * Geologic Toolbox example application: Generates a very simple elevation grid and writes it to 
- * an Wavefront OBJ file named "hello_world.obj" in the working directory.
+ * Geologic Toolbox example application: Generates a very simple elevation grid 
+ * and writes it to a Wavefront OBJ file named "hello_world.obj" in the working 
+ * directory.
  * 
  * @author Benno Schmidt
  */
