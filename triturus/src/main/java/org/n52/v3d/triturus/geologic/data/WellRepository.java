@@ -111,6 +111,7 @@ public class WellRepository
 		// If not, then create a new well object:
 		if (w == null) {
 			w = new Well(wellName);
+			w.setLocation(pos);
 			wells.add(w);
 		}
 
