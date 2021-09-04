@@ -58,7 +58,7 @@ import java.util.List;
  * <ol>
  * <li>GOCAD data file format version 1.0 is assumed.</li>
  * <li>Vertex numbers given in the TSurf file will not be processed. For the
- * n-th given vertex n will be assumed as index number, with n >= 1.</li>
+ * n-th given vertex n will be assumed as index number, with n &gt;= 1.</li>
  * <li>Coordinate system support has not been implemented yet, i.e. 
  * coordinates are processed as they are given.</li>
  * </ol>
@@ -88,8 +88,6 @@ public class IoGocadTSurfReader extends IoObject
      * 
      * @param location File path or valid URL
      * @return List of TINs, or <i>null</i> if an error occurs
-     * @throws org.n52.v3d.triturus.core.T3dException
-     * @throws org.n52.v3d.triturus.core.T3dNotYetImplException
      */
     public List<GmSimpleTINFeature> read(String location) 
     {

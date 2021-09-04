@@ -54,7 +54,7 @@ public class GocadDataInfo
 	/**
 	 * gets the object type name.
 	 * 
-	 * @param return Type name, e.g. "TSurf"
+	 * @return Type name, e.g. "TSurf"
 	 */
 	public String getObjectType() {
 		return objectType;
@@ -67,7 +67,7 @@ public class GocadDataInfo
 	/**
 	 * gets the object's name.
 	 * 
-	 * @param return Object name
+	 * @return Object name
 	 */
 	public String getObjectName() {
 		return objectName;
