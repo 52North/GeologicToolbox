@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.n52.v3d.triturus.core.T3dException;
-import org.n52.v3d.triturus.core.T3dNotYetImplException;
 import org.n52.v3d.triturus.geologic.data.Well;
 import org.n52.v3d.triturus.geologic.data.WellRepository;
 import org.n52.v3d.triturus.gisimplm.GmPoint;
@@ -52,21 +51,58 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  * <ul>
  * <li>
  *   A whitespace character ' ' is used as delimiter (no support of ';' or ','
- *   has been implemented yet).
+ *   has been implemented).
  * </li>
  * <li>
  *   The first line of the input file gives the field names. Supported field
- *   sequences are:
+ *   sequences are, e.g.:
  *   <ul>
- *   <li><tt>WELLNAME X Y DATUM KB MAXIMUM_DEPTH</tt> to give well locations, or</li>
- *   <li><tt>WellName   X   Y   Z   MD   MarkerName</tt> to give marker data.</li>
+ *   <li><tt>WELLNAME X Y DATUM KB MAXIMUM_DEPTH</tt> to give well locations, 
+ *   or</li> <li><tt>WellName&nbsp;&nbsp;&nbsp;X&nbsp;&nbsp;&nbsp;Y&nbsp;&nbsp;&nbsp;Z&nbsp;&nbsp;&nbsp;MD&nbsp;&nbsp;&nbsp;MarkerName</tt> to give marker 
+ *   data.</li>
  *   </ul>
  * </li>
  * <li>
+ *   Supported field names are:
+ *   <ul>
+ *   <li><tt>WELLNAME</tt>: Well identifier (<tt>String</tt>-valued)</li>
+ *   <li><tt>X</tt>: <i>x</i>-coordinate</li>
+ *   <li><tt>Y</tt>: <i>y</i>-coordinate</li>
+ *   <li>
+ *     <tt>DATUM</tt>: <i>z</i>-coordinate of well location; considered for 
+ *     well locations as <tt>InfoType</tt>.
+ *   </li>
+ *   <li>
+ *     <tt>Z</tt>: <i>z</i>-coordinate of well location, considered for markers
+ *     as <tt>InfoType</tt>.
+ *   </li>
+ *   <li>
+ *     <tt>KB</tt>: &quot;Kelly Bushing height&quot;, i.e. the height of the 
+ *     drilling floor above the ground level; considered for well locations as 
+ *     <tt>InfoType</tt>.
+ *   </li>
+ *   <li>
+ *     <tt>MD</tt>: Marker depth, considered for markers as <tt>InfoType</tt>.
+ *   </li>
+ *   <li>
+ *     <tt>MAXIMUM_DEPTH</tt>: Marker depth, considered for well locations as 
+ *     <tt>InfoType</tt>.
+ *   </li>
+ *   <li>
+ *     <tt>MARKERNAME</tt>: Marker identifier (<tt>String</tt>-valued), 
+ *     considered for markers as <tt>InfoType</tt>.
+ *   </li>		
+ *   </ul>	
+ * </li>
+ * <li>
+ *   Non standard-ASCII characters language-specific characters such as German
+ *   &quot;umlauts&quot; should be avoided.
+ * </li>
+ * <li>
  *   Since well and marker names may contain whitespaces, it is assumed that 
- *   x, y, z, and marker depth are given in a continuous sequence immediately 
- *   following the well name while the marker name has to be given as last
- *   element, i.e. the sequence <tt>well x y z depth marker</tt>.
+ *   <i>x</i>, <i>y</i>, <i>z</i>, and marker depth are given in a continuous 
+ *   sequence immediately following the well name while the marker name has to 
+ *   be given as last element, i.e. the sequence <tt>well x y z depth marker</tt>!
  * </li>
  * <li>
  *   Double whitespace characters in well and marker names will be ignored 
@@ -74,38 +110,44 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  *   will be changed to <tt>&quot;Well&nbsp;1&nbsp;B&quot;</tt>.   
  * </li>
  * <li>
- *   To detect the positions of x- and y-coordinates in the file, it is assumed
- *   that coordinates are given by floating-point numbers &gt;100.000. 
+ *   To detect the positions of <i>x</i>- and <i>y</i>-coordinates in the file, 
+ *   it is assumed that coordinates are given by floating-point numbers &gt;100.000. 
  * </li>
  * </ul>
- * <br/>
- * TODO: Rückgabe von Fehlern an aufrufende Anwendung vereinbaren
- * TODO: Decodierung Umlaute aus CSV-Dateien
- * TODO: Marker namens "Surface" mit Gornud-Level (loc.z) vergleichen
- * TODO: v_ -> virtual well
  * 
  * @author Benno Schmidt
  */
 public class IoWellCsvReader 
 {
+	// TODO: Marker namens "Surface" mit Ground-Level (loc.z) vergleichen
+	// TODO: v_ -> virtual well
+
     /**
      * reads well information from the given CSV file. 
      * 
      * @param filename File name (with path optionally)
      * @return {@link ArrayList} consisting of {@link Well} objects
-     * @throws org.n52.v3d.triturus.core.T3dException
-     * @throws org.n52.v3d.triturus.core.T3dNotYetImplException
+     * @throws org.n52.v3d.triturus.core.T3dException if an error occurs
      */
     public List<Well> read(String filename) 
-    	throws T3dException, T3dNotYetImplException
+    	throws T3dException
     {
         WellRepository wRepo = new WellRepository();
         this.addToRepository(filename, wRepo);
         return wRepo.getWells();        
     }
 
+    /**
+     * add the well and marker information given by an well input file to a 
+     * given well repository. (See {@link WellRepositoryApp} for an example.)
+     * 
+     * @param filename File name (with path optionally)
+     * @param wRepo Existing well repository
+     * @return Resulting well repository (i.e., <tt>wRepo</tt>)
+     * @throws T3dException if an error occurs
+     */
     public WellRepository addToRepository(String filename, WellRepository wRepo) 
-       	throws T3dException, T3dNotYetImplException
+       	throws T3dException
     {
         String line = "";
         int lineNumber = 0;
@@ -176,7 +218,8 @@ public class IoWellCsvReader
             System.out.println("Read " + lineNumber + " lines from file \"" + filename + "\".");
         }
         catch (FileNotFoundException e) {
-            throw new T3dException("Could not access file \"" + filename + "\".");
+        	String msg = "Could not access file \"" + filename + "\".";
+        	throw new T3dException(msg);
         }
         catch (IOException e) {
             throw new T3dException(e.getMessage());
@@ -185,7 +228,8 @@ public class IoWellCsvReader
             throw new T3dException(e.getMessage());
         }
         catch (Exception e) {
-            throw new T3dException("Parser error in \"" + filename + "\":" + lineNumber);
+        	String msg = "Parser error in \"" + filename + "\":" + lineNumber;
+        	throw new T3dException(msg);
         }
 
         return wRepo;        
@@ -282,9 +326,13 @@ public class IoWellCsvReader
 		}
 		return s;
 	}
-	
-    // Determine type of information given in the input file: 
-    private enum InfoType { Well_Locations, Markers, Unknown };
+
+    /**
+     * Type of information given in the input file 
+     */
+    public enum InfoType { Well_Locations, Markers, Unknown };
+
+    // Determine information type: 
 	private InfoType detectInformationType(List<String> cols) {
 		if (cols == null || cols.size() < 6) 
 			return InfoType.Unknown;
@@ -312,7 +360,7 @@ public class IoWellCsvReader
 			res = InfoType.Well_Locations;
 		if (f0WellName && f1X && f2Y && f3Z && f4MD && f5MarkerName) 
 			res = InfoType.Markers;
-		System.out.println("Detected InfoType: " + res);
+		System.out.println("Detected InfoType: \"" + res + "\"");
 		return res;
 	}
 }
