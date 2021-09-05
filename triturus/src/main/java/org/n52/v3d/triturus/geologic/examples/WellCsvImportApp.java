@@ -32,6 +32,8 @@
  */
 package org.n52.v3d.triturus.geologic.examples;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.n52.v3d.triturus.core.T3dException;
@@ -39,8 +41,8 @@ import org.n52.v3d.triturus.geologic.data.Well;
 import org.n52.v3d.triturus.geologic.importers.IoWellCsvReader;
  
 /**
- * GeologicToolbox example application: Reads a CSV file with exported from a 
- * GOCAD well object.
+ * GeologicToolbox example application: Reads a CSV file with drilling information 
+ * exported from a GOCAD well object.
  * 
  * @author Benno Schmidt
  */
@@ -64,13 +66,25 @@ public class WellCsvImportApp
             wells = new IoWellCsvReader().read(inFilename); 
         }
         catch (T3dException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         
         if (wells != null) {
             for (Well w : wells) {
                 System.out.println(w);
-                System.out.println(w.getMarkers());
+                System.out.println("  Markers: " + w.getMarkers());
+            }
+        }
+
+        if (wells != null) {
+            ArrayList<String> wellNames = new ArrayList<String>(); 
+            for (Well w : wells) {
+            	wellNames.add(w.getName());
+            }
+            Collections.sort(wellNames);
+            System.out.println("Summary of well names:");            
+            for (String name : wellNames) {
+            	System.out.println(name);
             }
         }
         

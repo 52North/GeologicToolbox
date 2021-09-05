@@ -40,16 +40,16 @@ import org.n52.v3d.triturus.geologic.data.WellRepository;
 import org.n52.v3d.triturus.geologic.importers.IoWellCsvReader;
  
 /**
- * GeologicToolbox example application: Reads a CSV file with exported from a 
- * GOCAD well object.
+ * GeologicToolbox example application: Reads a CSV file with well object data
+ * from GOCAD export files.
  * 
  * @author Benno Schmidt
  */
 public class WellRepositoryApp
 {
     private String
-        inFilename1 = "/projects/GeologicToolbox/data/wells_locations_test.csv",
-        inFilename2 = "/projects/GeologicToolbox/data/real_and_virtual_wells.csv";
+        inFilename1 = "/projects/GeologicToolbox/data/Wells_and_markers_1.csv",
+        inFilename2 = "/projects/GeologicToolbox/data/Wells_and_markers_2.csv";
     
     public static void main(String args[]) {
         new WellRepositoryApp().run();
@@ -68,7 +68,6 @@ public class WellRepositoryApp
             e.printStackTrace();
         }
 
-        /*
         List<Well> wells = repo.getWells();     
         if (wells != null) {
             for (Well w : wells) {
@@ -76,9 +75,8 @@ public class WellRepositoryApp
                 System.out.println(w.getMarkers());
             }
         }
-        */
 
-        System.out.println("Managed well objects: " + repo.numberWells());
-        System.out.println("Managed markers: " + repo.numberMarkers());     
+        System.out.println("Read well objects: " + repo.numberWells());
+        System.out.println("Read markers: " + repo.numberMarkers());     
     }
 }

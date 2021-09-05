@@ -1,0 +1,13 @@
+WellName  X  Y  Z  MD  MarkerName
+W1 Salmon 1 124570 5044894 209 0.0 Surface
+W1 Salmon 1 124570 5044894 203.5 5.5 Quaternary
+W1 Salmon 1 124570 5044894 23 186.0 Sandstone
+W1 Salmon 1 124570 5044894 -226.75 475.75 End depth 
+W2 Salmon 2 124077 5044571 209 0.00 Surface
+W2 Salmon 2 124077 5044571 203.5 5.50 Quaternary
+W2 Salmon 2 124077 5044571 23 186.00 Sandstone
+W2 Salmon 2 124077 5044571 -226.75 475.75 End depth 
+W3 Haddock 122506.5 5044401.6 209.5 0 Surface
+W3 Haddock 122506.5 5044401.6 192.7 17 Quaternary
+W3 Haddock 122506.5 5044401.6 72.4 137.2 Sandstone
+W3 Haddock 122506.5 504401.6 21.9 187.5 End depth 
