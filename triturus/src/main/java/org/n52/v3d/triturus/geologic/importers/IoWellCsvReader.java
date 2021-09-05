@@ -57,32 +57,41 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  *   The first line of the input file gives the field names. Supported field
  *   sequences are, e.g.:
  *   <ul>
- *   <li><tt>WELLNAME X Y DATUM KB MAXIMUM_DEPTH</tt> to give well locations, 
- *   or</li> <li><tt>WellName&nbsp;&nbsp;&nbsp;X&nbsp;&nbsp;&nbsp;Y&nbsp;&nbsp;&nbsp;Z&nbsp;&nbsp;&nbsp;MD&nbsp;&nbsp;&nbsp;MarkerName</tt> to give marker 
- *   data.</li>
+ *   <li>
+ *     <tt>WELLNAME X Y DATUM KB MAXIMUM_DEPTH</tt> to give <i>well locations</i>
+ *     (<tt>InfoType</tt> = &quot;Well_Locations&quot;), or
+ *   </li> 
+ *   <li>
+ *     <tt>WellName&nbsp;&nbspX&nbsp;&nbsp;Y&nbsp;&nbsp;Z&nbsp;&nbsp;MD&nbsp;&nbsp;MarkerName</tt> 
+ *     to give <i>marker data</i> (<tt>InfoType</tt> = &quot;Markers&quot;).</li>
  *   </ul>
  * </li>
  * <li>
  *   Supported field names are:
  *   <ul>
- *   <li><tt>WELLNAME</tt>: Well identifier (<tt>String</tt>-valued)</li>
- *   <li><tt>X</tt>: <i>x</i>-coordinate</li>
- *   <li><tt>Y</tt>: <i>y</i>-coordinate</li>
  *   <li>
- *     <tt>DATUM</tt>: <i>z</i>-coordinate of well location; considered for 
- *     well locations as <tt>InfoType</tt>.
+ *     <tt>WELLNAME</tt>: Well identifier (<tt>String</tt>-valued)
  *   </li>
  *   <li>
- *     <tt>Z</tt>: <i>z</i>-coordinate of well location, considered for markers
- *     as <tt>InfoType</tt>.
+ *     <tt>X</tt>, <tt>X</tt>: <i>x</i>- and <i>y</i>-coordinate 
+ *     (values must be > 100.000; see note below).
+ *   </li>
+ *   <li>
+ *     <tt>DATUM</tt>: <i>z</i>-coordinate of well location; considered if
+ *     <tt>InfoType</tt> = &quot;Well_locations&quot;.
+ *   </li>
+ *   <li>
+ *     <tt>Z</tt>: <i>z</i>-coordinate of well location; considered if
+ *     <tt>InfoType</tt> = &quot;Markers&quot;.
  *   </li>
  *   <li>
  *     <tt>KB</tt>: &quot;Kelly Bushing height&quot;, i.e. the height of the 
- *     drilling floor above the ground level; considered for well locations as 
- *     <tt>InfoType</tt>.
+ *     drilling floor above the ground level; considered if
+ *     <tt>InfoType</tt> = &quot;Well_locations&quot;.
  *   </li>
  *   <li>
- *     <tt>MD</tt>: Marker depth, considered for markers as <tt>InfoType</tt>.
+ *     <tt>MD</tt>: Marker depth; considered if
+ *     <tt>InfoType</tt> = &quot;Markers&quot;.
  *   </li>
  *   <li>
  *     <tt>MAXIMUM_DEPTH</tt>: Marker depth, considered for well locations as 
@@ -111,7 +120,7 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  * </li>
  * <li>
  *   To detect the positions of <i>x</i>- and <i>y</i>-coordinates in the file, 
- *   it is assumed that coordinates are given by floating-point numbers &gt;100.000. 
+ *   it is assumed that coordinates are given by floating-point numbers &gt; 100.000. 
  * </li>
  * </ul>
  * 
@@ -139,7 +148,8 @@ public class IoWellCsvReader
 
     /**
      * add the well and marker information given by an well input file to a 
-     * given well repository. (See {@link WellRepositoryApp} for an example.)
+     * given well repository. (See {@link org.n52.v3d.triturus.geologic.examples.WellRepositoryApp} 
+     * for an example.)
      * 
      * @param filename File name (with path optionally)
      * @param wRepo Existing well repository
@@ -151,7 +161,8 @@ public class IoWellCsvReader
     {
         String line = "";
         int lineNumber = 0;
-
+        int nSkippedLines = 0;
+        
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filename));
 
@@ -165,7 +176,8 @@ public class IoWellCsvReader
             line = reader.readLine();
             while (line != null) {
                 lineNumber++;
-
+                boolean lineOk = false;
+                
                 List<String> tokens = this.scanTokens(line);                
 				//System.out.println("\nline #" + lineNumber + ": " + tokens.size() + " tokens");
 				//System.out.println(line);
@@ -190,6 +202,7 @@ public class IoWellCsvReader
 					if (_wellName != null && _x != null && _y != null && _datum != null) {
 						VgPoint pos = new GmPoint(_x, _y, _datum);
 						wRepo.addWell(_wellName, pos, _kb, _maximumDepth);
+						lineOk = true; 
 					}
 					
 					break;
@@ -204,6 +217,7 @@ public class IoWellCsvReader
 					if (_wellName != null && _x != null && _y != null && _z != null && _markerName != null) {
 						VgPoint loc = new GmPoint(_x, _y, _z);
 						wRepo.addMarker(_wellName, loc, _md, _markerName);
+						lineOk = true; 
 					}
 					
 					break;
@@ -212,10 +226,19 @@ public class IoWellCsvReader
 					break;
 				}
 				
+				if (!lineOk) 
+					nSkippedLines++;
                 line = reader.readLine();
             }
             reader.close();
             System.out.println("Read " + lineNumber + " lines from file \"" + filename + "\".");
+            if (nSkippedLines > 0) {
+                System.out.print("WARNING: Skipped " + nSkippedLines + " line");
+                if (nSkippedLines > 1) { 
+                	System.out.print("s");
+                }
+                System.out.println(" (maybe there are errors in the input file)!");            	
+            }
         }
         catch (FileNotFoundException e) {
         	String msg = "Could not access file \"" + filename + "\".";
