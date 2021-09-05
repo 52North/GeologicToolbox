@@ -62,7 +62,7 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  *     (<tt>InfoType</tt> = &quot;Well_Locations&quot;), or
  *   </li> 
  *   <li>
- *     <tt>WellName&nbsp;&nbspX&nbsp;&nbsp;Y&nbsp;&nbsp;Z&nbsp;&nbsp;MD&nbsp;&nbsp;MarkerName</tt> 
+ *     <tt>WellName&nbsp;&nbsp;X&nbsp;&nbsp;Y&nbsp;&nbsp;Z&nbsp;&nbsp;MD&nbsp;&nbsp;MarkerName</tt> 
  *     to give <i>marker data</i> (<tt>InfoType</tt> = &quot;Markers&quot;).</li>
  *   </ul>
  * </li>
@@ -74,7 +74,7 @@ import org.n52.v3d.triturus.vgis.VgPoint;
  *   </li>
  *   <li>
  *     <tt>X</tt>, <tt>X</tt>: <i>x</i>- and <i>y</i>-coordinate 
- *     (values must be > 100.000; see note below).
+ *     (values must be &gt; 100.000; see note below).
  *   </li>
  *   <li>
  *     <tt>DATUM</tt>: <i>z</i>-coordinate of well location; considered if

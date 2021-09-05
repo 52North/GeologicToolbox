@@ -48,7 +48,7 @@ import org.n52.v3d.triturus.vgis.VgPoint;
 /**
  * Computation of the correlation coefficient of two surfaces modeled as TINs
  * (&quot;triangulated irregular networks&quot;). 
- * <br/>
+ * <br>
  * The computation will be done with respect to a moving windows of 3x3, 5x5, 
  * ... up to (2<i>n</i> + 1) x (2<i>n</i> + 1) grid cells, where n shall not 
  * exceed the value {@link this#nMax}. For <i>n</i> &lt; 1 or <i>n</i> &gt; 
@@ -98,7 +98,7 @@ public class FltTINCorrelation extends T3dProcFilter
      * will be available to compute the grid holding the correlation 
      * coefficient values.
      *  
-     * @short nMax Maximum window size parameter
+     * @return Maximum window size parameter
      */
     public short getMaxWindowSize() {
     	return nMax;
@@ -106,7 +106,7 @@ public class FltTINCorrelation extends T3dProcFilter
 
     /**
      * sets the maximum size of the moving computation window to 
-     * (2<i>n</i> + 1) x (2<i>n</i> + 1). Note that <i>n</i> <= <i>nMax</i> 
+     * (2<i>n</i> + 1) x (2<i>n</i> + 1). Note that <i>n</i> &lt;= <i>nMax</i> 
      * must hold.
      *  
      * @param n Windows size parameter
@@ -254,10 +254,12 @@ public class FltTINCorrelation extends T3dProcFilter
      *
      * @param tin1 First input TIN
      * @param tin2 Second input TIN
-     * @param cellSize
-	 * @param windowSize
+	 * @param windowSize Size of the moving window (as number of raster cells)
+     * @param cellSize TIN rasterization resolution
+     * @param zConflictHandler Directive how to handle z-value conflicts in 3-D rasterization process
+     * @param windowForm Window form parameter (e.g. quadratic or circle-shaped)
      * @return Result grid
-     * @throws T3dException
+     * @throws T3dException if an error occurs
      */
     public VgElevationGrid  transform(
     	GmSimpleTINFeature tin1, GmSimpleTINFeature tin2,

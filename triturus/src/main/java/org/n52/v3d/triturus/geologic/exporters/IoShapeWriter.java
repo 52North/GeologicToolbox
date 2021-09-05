@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -51,6 +52,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.GeometryBuilder;
 import org.geotools.referencing.ReferencingFactoryFinder;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.n52.v3d.triturus.core.T3dException;
@@ -112,11 +114,16 @@ public class IoShapeWriter extends IoAbstractWriter {
      * @param featureType Identifier for what kind of geometry you want to store
      * @param epsg The CRS where you want to save your file
      * @param attributes The shape file's attributes
-     * @throws T3dNotYetImplException
-     * @throws T3dException
-     * @throws FactoryException
+     * @throws T3dNotYetImplException if a not yet implemented function has been called
+     * @throws T3dException when an error occurs inside the GeologicToolbox
+     * @throws FactoryException if a GeoTools-specific factory call fails
      */
-    public void initFeatureType(String featureType, String epsg, List<ShapeFileAttribute> attributes) throws T3dNotYetImplException, T3dException, FactoryException {
+    public void initFeatureType(
+    		String featureType, 
+    		String epsg, 
+    		List<ShapeFileAttribute> attributes) 
+    		throws T3dNotYetImplException, T3dException, FactoryException 
+    {
         initFeatureType(featureType, epsg);
         this.attributes = attributes;
         if (this.attributes != null) {
@@ -134,11 +141,14 @@ public class IoShapeWriter extends IoAbstractWriter {
      *
      * @param featureType Identifier for what kind of geometry you want to store
      * @param epsg The CRS where you want to save your file
-     * @throws T3dNotYetImplException
-     * @throws T3dException
-     * @throws FactoryException
+     * @throws T3dNotYetImplException if a not yet implemented function has been called
+     * @throws T3dException when an error occurs inside the GeologicToolbox
+     * @throws FactoryException if a GeoTools-specific factory call fails
      */
-    public void initFeatureType(String featureType, String epsg) throws T3dNotYetImplException, T3dException, FactoryException {
+    public void initFeatureType(
+    		String featureType, 
+    		String epsg) 
+    		throws T3dNotYetImplException, T3dException, FactoryException {
         // create new SFTBuilder and assign a name
         this.sftBuilder = new SimpleFeatureTypeBuilder();
         this.sftBuilder.setName("GeologicToolbox-FeatureTypeBuilder");
@@ -169,9 +179,10 @@ public class IoShapeWriter extends IoAbstractWriter {
      * geom + adding attributes to them) must be created on the basis of the
      * SimpleFeatureTypeBuilder
      *
-     * @throws T3dException
+     * @throws T3dException if an error occurs
      */
-    public void buildFeatureType() throws T3dException {
+    public void buildFeatureType() throws T3dException 
+    {
         if (this.initialized) {
             this.sft = sftBuilder.buildFeatureType();
             this.sfBuilder = new SimpleFeatureBuilder(sft);
@@ -188,7 +199,7 @@ public class IoShapeWriter extends IoAbstractWriter {
      *
      * @param feature The Feature, e.g. a TIN instance you want to write into
      * the shape file
-     * @throws T3dException
+     * @throws T3dException if an error occurs
      */
     public void writeGeometry(VgFeature feature) {
         // check correct execution order
@@ -208,8 +219,6 @@ public class IoShapeWriter extends IoAbstractWriter {
             default:
                 throw new T3dException("No valid feature type");
         }
-        
-
     }
 
     /**
@@ -217,8 +226,8 @@ public class IoShapeWriter extends IoAbstractWriter {
      * shape file. You have to write your own method in this way, if you want to
      * store other geometries
      *
-     * @param tin The Tin instance you want to write into the shape file
-     * @throws T3dException
+     * @param tin The TIN instance you want to write into the shape file
+     * @throws T3dException if an error occurs
      */
     private void writeTIN(GmSimpleTINFeature tin) {
         // Cast object for access of points/triangles
@@ -304,11 +313,10 @@ public class IoShapeWriter extends IoAbstractWriter {
 
             }
         }
-
     }
 
     /**
-     * Foruth and last step to write a shape file. This is where the Features
+     * Fourth and last step to write a shape file. This is where the Features
      * stored in the FeatureCollection are written to the file
      *
      * @param path The file's path to be created
@@ -356,5 +364,4 @@ public class IoShapeWriter extends IoAbstractWriter {
     public String log() {
         return logString;
     }
-
 }
