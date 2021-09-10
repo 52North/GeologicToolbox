@@ -32,6 +32,7 @@
  */
 package org.n52.v3d.triturus.geologic.util;
 
+import org.n52.v3d.triturus.core.T3dException;
 import org.n52.v3d.triturus.t3dutil.T3dVector;
 import org.n52.v3d.triturus.vgis.T3dSRSException;
 import org.n52.v3d.triturus.vgis.VgPoint;
