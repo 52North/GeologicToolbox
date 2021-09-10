@@ -74,7 +74,7 @@ public class ClarNotationShapeFileAttribute extends ShapeFileAttribute {
             sftBuilder.add("dip", Double.class);
         }
         if (dipDir) {
-            sftBuilder.add("reserviert", Double.class);
+            sftBuilder.add("dipdir", Double.class);
         }
         if (strike) {
             sftBuilder.add("strike", Double.class);
