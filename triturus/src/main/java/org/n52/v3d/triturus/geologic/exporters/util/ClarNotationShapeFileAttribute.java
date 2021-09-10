@@ -56,7 +56,7 @@ public class ClarNotationShapeFileAttribute extends ShapeFileAttribute {
 
     public ClarNotationShapeFileAttribute(boolean dip, boolean dipDir, boolean strike, boolean compassDirection) {
         this.dip = dip;
-        this.dipDir = dip;
+        this.dipDir = dipDir;
         this.strike = strike;
         this.compassDirection = compassDirection;
     }
