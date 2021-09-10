@@ -406,7 +406,7 @@ public class IoGocadTSurfReader extends IoObject
 		            	long[] tri = triangles.get(ii); 
 		                tinGeom.setTriangle(ii, 
 		                	(int)(tri[0] - 1), (int)(tri[1] - 1), (int)(tri[2] - 1));
-		                // TODO in Triturus fuer long ergänzen und dann auch long verwenden!
+		                // TODO in Triturus fuer long ergaenzen und dann auch long verwenden!
 		            }
 	
 		            tins.add(tin);
